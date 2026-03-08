@@ -70,6 +70,40 @@ bioai/
 - Branch naming: `type/description` (kebab-case)
 - Never force push to main.
 
+## Parallel Worktree Workflow (Hackathon)
+
+Two developers work simultaneously using git worktrees. Each task gets its own branch and worktree.
+
+### Setup
+```bash
+git worktree add .claude/worktrees/<task-name> feat/<task-name>
+```
+
+### Merge Loop
+1. **Work** on your feature branch in your worktree
+2. **Coordinate verbally** — say "I'm merging" before merging
+3. **Rebase and merge** (one person at a time):
+   ```bash
+   # In your worktree
+   git fetch origin
+   git rebase origin/main
+   # Then from main worktree
+   git merge --ff-only feat/<task-name>
+   git push origin main
+   ```
+4. **Other person rebases** their branch immediately:
+   ```bash
+   git fetch origin && git rebase origin/main
+   ```
+5. **Continue working**
+
+### Rules
+- One merge at a time — coordinate verbally
+- Rebase before every merge to keep linear history
+- Merge frequently (every 30-60 min) to minimize divergence
+- Keep shared files (`models.py`, `config.py`, `__init__.py`) small and coordinate changes verbally
+- If conflicts arise, the person merging resolves them on the spot
+
 ## Commands
 
 ```bash
