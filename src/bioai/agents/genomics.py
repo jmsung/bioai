@@ -43,7 +43,7 @@ class GenomicsAgent(BaseAgent):
     role = "Variant interpretation and genomic risk analysis"
 
     def __init__(self, settings: Settings | None = None):
-        self._settings = settings or Settings()
+        self._settings = settings or Settings.from_env()
         self._client = anthropic.Anthropic(api_key=self._settings.api_key)
 
     async def analyze(self, query: str, context: dict | None = None) -> AgentResult:
@@ -52,8 +52,8 @@ class GenomicsAgent(BaseAgent):
 
         try:
             response = self._client.messages.create(
-                model=self._settings.model,
-                max_tokens=1024,
+                model=self._settings.agent_model,
+                max_tokens=self._settings.max_tokens,
                 system=_SYSTEM_PROMPT,
                 tools=[_TOOL_DEF],
                 messages=messages,
@@ -84,7 +84,7 @@ class GenomicsAgent(BaseAgent):
 
                 messages.append({"role": "user", "content": tool_result_content})
                 response = self._client.messages.create(
-                    model=self._settings.model,
+                    model=self._settings.agent_model,
                     max_tokens=1024,
                     system=_SYSTEM_PROMPT,
                     tools=[_TOOL_DEF],
