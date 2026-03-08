@@ -17,6 +17,10 @@ dependencies = [
     "plotly",
     "requests",
     "httpx",
+    "tensorflow",
+    "numpy",
+    "scikit-learn",
+    "imbalanced-learn",
 ]
 
 [dependency-groups]
