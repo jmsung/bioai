@@ -1,6 +1,11 @@
 .mb
 data/*
 !data/.gitkeep
+!data/diabetes/
+data/diabetes/*
+!data/diabetes/README.md
+!data/diabetes/raw/
+!data/diabetes/models/
 __pycache__/
 *.py[cod]
 *.egg-info/
