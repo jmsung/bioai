@@ -1,6 +1,4 @@
-# Multi-Agent Healthcare Intelligence System
-
-## Vision
+# Vision
 
 A multi-agent AI system that integrates diverse biomedical knowledge domains to support **personalized health guidance** and **early intervention**.
 

@@ -1,108 +1,43 @@
-# BioAI — Multi-Agent Healthcare Intelligence System
+# BioAI
 
-## Overview
-
-A multi-agent AI system that integrates diverse biomedical knowledge domains to support **personalized health guidance** and **early intervention**. Given a patient's biological data and health profile, specialized agents collaborate to detect early risk signals, recommend preventive strategies, and provide evidence-grounded reasoning.
-
-## Architecture
-
-### Specialized Agents
-
-| Agent | Domain | Responsibility |
-|-------|--------|----------------|
-| Genomics | Variant interpretation | Analyze genetic variants for disease risk |
-| Transcriptomics | Gene expression | Interpret expression patterns and signals |
-| Proteomics | Biomarker inference | Identify protein biomarkers and pathways |
-| Pharmacology | Drug interactions | Reason about medications, interactions, contraindications |
-| Clinical Guidelines | Medical guidelines | Interpret and apply clinical practice guidelines |
-| Literature Review | Publications | Search and synthesize recent medical literature |
-
-### System Flow
-
-1. Patient data ingestion (biological data + health profile)
-2. Agents independently analyze their domain
-3. Orchestrator aggregates findings
-4. Generate integrated health assessment with citations
+Multi-agent healthcare intelligence system — 6 specialized agents analyze patient data and synthesize personalized health assessments.
 
 ## Project Structure
 
 ```
 bioai/
-├── src/bioai/          # Shared package (importable modules)
-│   ├── agents/         # Agent implementations (one per domain)
-│   ├── orchestrator/   # Multi-agent coordination
-│   ├── models/         # Data models and schemas
-│   └── utils/          # Shared utilities
-├── scripts/            # Entry points and CLI tools
-├── tests/              # Tests (mirror src/ structure)
-├── docs/               # Documentation
-└── CLAUDE.md           # This file
+├── src/bioai/           # Shared package (agents, tools, eval, orchestrator)
+├── scripts/             # Entry points (run.py, evaluate.py, demo.py)
+├── app/                 # Streamlit dashboard
+├── tests/               # Tests (mirror src/ structure)
+├── docs/                # Knowledge DB (architecture, vision, data, demo)
+├── mb_<dev>/            # Per-developer memory banks (gitignored)
+└── data/                # Cached datasets (gitignored)
 ```
 
-## Development Rules
+## Development Model
 
-- **Python 3.11+** as primary language.
-- Use `uv` for dependency management.
-- Reusable logic goes in `src/bioai/`. Scripts only orchestrate.
-- Never duplicate functions across files — extract to the shared package.
-- Type hints on all function signatures.
-- Docstrings on public functions and classes.
+- **Team**: JS (infra + omics agents), YH (clinical agents + demo)
+- **Workflow**: Parallel worktrees per task, rebase-and-merge to main
+- **Memory banks**: Each developer has `mb_js/` or `mb_yh/` (gitignored) for local task tracking
+- **Merge protocol**: Coordinate verbally → rebase → `git merge --ff-only` → push → other rebases
 
-## Coding Standards
+## Key References
 
-- Clean, readable code. Simplicity over cleverness.
-- Minimal diffs — every changed line should trace to a task.
-- Follow existing patterns. Keep changes localized.
-- If 200 lines could be 50, rewrite it.
+- [docs/architecture.md](docs/architecture.md) — System design, agents, eval, Ralph Loop, model strategy
+- [docs/vision.md](docs/vision.md) — Project vision and capabilities
+- [docs/data.md](docs/data.md) — Datasets, patient cases, data format
+- [docs/demo.md](docs/demo.md) — Demo plan, dashboard, priorities
 
-## Agent Implementation
+## Rules
 
-- Each agent is a self-contained module in `src/bioai/agents/`.
-- Agents expose a consistent interface (input schema → output schema).
-- Use Claude API (`anthropic` SDK) for LLM calls.
-- Keep prompts in separate files or constants, not inline.
-- Each agent should declare its tools/capabilities explicitly.
-
-## Version Control
-
+- Python 3.12+, `uv` for deps
+- Reusable logic in `src/bioai/`, scripts only orchestrate
+- Claude API (`anthropic` SDK) for LLM calls; prompts in `src/bioai/prompts/*.txt`
+- Type hints on all signatures, docstrings on public APIs
 - Conventional commits: `type(scope): description`
-  - Types: `feat`, `fix`, `test`, `refactor`, `docs`, `chore`
 - Branch naming: `type/description` (kebab-case)
-- Never force push to main.
-
-## Parallel Worktree Workflow (Hackathon)
-
-Two developers work simultaneously using git worktrees. Each task gets its own branch and worktree.
-
-### Setup
-```bash
-git worktree add .claude/worktrees/<task-name> feat/<task-name>
-```
-
-### Merge Loop
-1. **Work** on your feature branch in your worktree
-2. **Coordinate verbally** — say "I'm merging" before merging
-3. **Rebase and merge** (one person at a time):
-   ```bash
-   # In your worktree
-   git fetch origin
-   git rebase origin/main
-   # Then from main worktree
-   git merge --ff-only feat/<task-name>
-   git push origin main
-   ```
-4. **Other person rebases** their branch immediately:
-   ```bash
-   git fetch origin && git rebase origin/main
-   ```
-5. **Continue working**
-
-### Rules
-- One merge at a time — coordinate verbally
-- Rebase before every merge to keep linear history
-- Merge frequently (every 30-60 min) to minimize divergence
-- Keep shared files (`models.py`, `config.py`, `__init__.py`) small and coordinate changes verbally
-- If conflicts arise, the person merging resolves them on the spot
+- Never force push to main
 
 ## Commands
 
@@ -110,4 +45,13 @@ git worktree add .claude/worktrees/<task-name> feat/<task-name>
 uv sync                  # Install dependencies
 uv run pytest            # Run tests
 uv run python scripts/   # Run scripts
+```
+
+## Memory Bank Setup
+
+Memory banks are gitignored. After cloning, create yours:
+
+```bash
+mkdir -p mb_<you>/{active,hold,todo,completed}
+# Seed progress.md from your task list
 ```

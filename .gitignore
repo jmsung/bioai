@@ -1,4 +1,5 @@
 .mb
+mb_*/
 __pycache__/
 *.py[cod]
 *.egg-info/
