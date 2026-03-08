@@ -1,0 +1,13 @@
+{
+  "agent": "doctor",
+  "status": "success",
+  "findings": {
+    "prediction": "Diabetic",
+    "probability": 0.9157,
+    "risk_level": "high",
+    "recommendation": "hospital",
+    "reasoning": ""
+  },
+  "summary": "Evaluation run",
+  "error": null
+}

@@ -1,0 +1,17 @@
+{
+  "agent": "genomics",
+  "status": "success",
+  "findings": {
+    "predicted_class": "NONDM",
+    "confidence": 0.951948344707489,
+    "probabilities": {
+      "DMT1": 0.00586394127458334,
+      "DMT2": 0.042187679558992386,
+      "NONDM": 0.951948344707489
+    },
+    "risk_level": "low",
+    "interpretation": "No diabetes-associated pattern detected (95% confidence)."
+  },
+  "summary": "## Clinical Summary\n\n**Predicted Classification:** NONDM (Non-Diabetic)  \n**Confidence Level:** High (95.2%)\n\n### What This Means:\n\nThe genomic analysis indicates this DNA sequence does **not** carry genetic markers strongly associated with diabetes risk. The classification shows:\n\n- **95.2% probability** of a non-diabetic genetic pattern\n- **4.2% probability** of Type 2 diabetes-associated variants\n- **0.6% probability** of Type 1 diabetes-associated variants\n\n### Clinical Interpretation:\n\nThis high-confidence result suggests the analyzed genomic region does not contain significant genetic predisposition markers for either Type 1 or Type 2 diabetes. The patient's genetic profile in this sequence appears to follow patterns typically seen in individuals without diabetes-associated genetic risk factors.\n\n**Important Note:** This analysis is based on one genomic sequence. Diabetes risk is multifactorial, involving multiple genes, environmental factors, and lifestyle components. A comprehensive diabetes risk assessment would require analysis of additional genomic regions, family history, and clinical factors.",
+  "error": null
+}

@@ -1,6 +1,7 @@
 """LLM-as-judge evaluation (Layer 2)."""
 
 import json
+import re
 
 import anthropic
 from pydantic import BaseModel
@@ -66,7 +67,11 @@ async def judge_agent(
             ],
         )
         text = response.content[0].text
-        data = json.loads(text)
+        # Strip markdown fences if present
+        match = re.search(r"```(?:json)?\s*([\s\S]*?)```", text)
+        if match:
+            text = match.group(1)
+        data = json.loads(text.strip())
         return JudgeScore(**data)
     except Exception as e:
         return JudgeScore(explanation=f"Judge error: {e}")

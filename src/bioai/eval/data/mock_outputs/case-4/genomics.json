@@ -1,0 +1,17 @@
+{
+  "agent": "genomics",
+  "status": "success",
+  "findings": {
+    "predicted_class": "NONDM",
+    "confidence": 0.951948344707489,
+    "probabilities": {
+      "DMT1": 0.00586394127458334,
+      "DMT2": 0.042187679558992386,
+      "NONDM": 0.951948344707489
+    },
+    "risk_level": "low",
+    "interpretation": "No diabetes-associated pattern detected (95% confidence)."
+  },
+  "summary": "## Clinical Summary\n\n**Predicted Classification:** NONDM (No Diabetes Associated Pattern)  \n**Confidence Level:** High (95.2%)\n\n**Clinical Interpretation:**  \nThis DNA sequence analysis shows a **very high confidence** (95.2%) prediction for no diabetes-associated genomic pattern. The genetic markers in this sequence do not suggest predisposition to either Type 1 or Type 2 diabetes.\n\n**Risk Assessment:**\n- **Type 1 Diabetes risk:** Very low genetic predisposition (0.6% probability)\n- **Type 2 Diabetes risk:** Low genetic predisposition (4.2% probability)  \n- **No diabetes pattern:** Strong genetic pattern (95.2% probability)\n\n**Clinical Significance:**  \nThe genomic analysis indicates that this individual does not carry the genetic variants typically associated with increased diabetes risk. However, it's important to note that diabetes development is multifactorial - environmental factors, lifestyle, and other genetic variations not captured in this analysis can still influence diabetes risk. This result suggests a favorable genetic background regarding diabetes predisposition, but does not eliminate the need for standard preventive care and lifestyle management.",
+  "error": null
+}

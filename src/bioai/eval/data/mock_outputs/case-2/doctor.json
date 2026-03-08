@@ -1,0 +1,13 @@
+{
+  "agent": "doctor",
+  "status": "success",
+  "findings": {
+    "prediction": "Non-Diabetic",
+    "probability": 0.007,
+    "risk_level": "low",
+    "recommendation": "health_trainer",
+    "reasoning": ""
+  },
+  "summary": "Evaluation run",
+  "error": null
+}
