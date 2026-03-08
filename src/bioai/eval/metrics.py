@@ -8,6 +8,7 @@ from bioai.models import (
     AgentStatus,
     DoctorFindings,
     GenomicsFindings,
+    HealthTrainerFindings,
 )
 
 
@@ -76,6 +77,18 @@ def score_tool_accuracy(agent_result: AgentResult, case: EvalCase) -> MetricResu
             score=1.0 if correct else 0.0,
             passed=correct,
             detail=f"expected={expected}, actual={actual}",
+        )
+
+    if isinstance(findings, HealthTrainerFindings):
+        expected_level = case.expected.fitness_level
+        actual_level = findings.fitness_level
+        correct = actual_level == expected_level
+        return MetricResult(
+            metric="tool_accuracy",
+            agent="health_trainer",
+            score=1.0 if correct else 0.0,
+            passed=correct,
+            detail=f"expected_level={expected_level}, actual_level={actual_level}",
         )
 
     return MetricResult(

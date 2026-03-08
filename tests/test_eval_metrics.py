@@ -7,6 +7,7 @@ from bioai.models import (
     AgentStatus,
     DoctorFindings,
     GenomicsFindings,
+    HealthTrainerFindings,
     Recommendation,
     RiskLevel,
 )
@@ -46,10 +47,25 @@ def _doctor_result(prediction: str = "Diabetic") -> AgentResult:
     )
 
 
+def _health_trainer_result(fitness_level: str = "beginner") -> AgentResult:
+    return AgentResult(
+        agent="health_trainer",
+        status=AgentStatus.SUCCESS,
+        findings=HealthTrainerFindings(
+            fitness_level=fitness_level,
+            goals=["improve cardiovascular health"],
+            recommended_exercises=[{"Name": "Walking", "Type": "Cardio"}],
+            weekly_plan="Walk 30 minutes, 3 days per week.",
+        ),
+        summary="Exercise plan created.",
+    )
+
+
 def _case(
     dna_class: str = "DMT2",
     clinical_prediction: str = "Diabetic",
     decision: str = "hospital",
+    fitness_level: str | None = None,
 ) -> EvalCase:
     return EvalCase(
         id="test",
@@ -59,6 +75,7 @@ def _case(
             dna_class=dna_class,
             clinical_prediction=clinical_prediction,
             decision=decision,
+            fitness_level=fitness_level,
         ),
     )
 
@@ -89,6 +106,22 @@ class TestToolAccuracy:
     def test_doctor_wrong(self):
         result = score_tool_accuracy(
             _doctor_result("Non-Diabetic"), _case(clinical_prediction="Diabetic")
+        )
+        assert result.score == 0.0
+        assert not result.passed
+
+    def test_health_trainer_correct(self):
+        result = score_tool_accuracy(
+            _health_trainer_result("beginner"),
+            _case(decision="health_trainer", fitness_level="beginner"),
+        )
+        assert result.score == 1.0
+        assert result.passed
+
+    def test_health_trainer_wrong(self):
+        result = score_tool_accuracy(
+            _health_trainer_result("advanced"),
+            _case(decision="health_trainer", fitness_level="beginner"),
         )
         assert result.score == 0.0
         assert not result.passed

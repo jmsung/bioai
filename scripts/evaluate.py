@@ -47,6 +47,37 @@ async def run_doctor(case: EvalCase, settings: Settings) -> AgentResult:
     return agent.result(summary="Evaluation run")
 
 
+async def run_health_trainer(
+    case: EvalCase,
+    settings: Settings,
+    genomics_result: AgentResult | None,
+    doctor_result: AgentResult | None,
+) -> AgentResult:
+    """Run Health Trainer agent on a test case (only for health_trainer decisions)."""
+    from bioai.agents.health_trainer import HealthTrainerAgent
+
+    # Build context from prior agent results
+    context: dict = {}
+    if genomics_result:
+        context["genomics"] = genomics_result.model_dump()
+    if doctor_result:
+        context["doctor"] = doctor_result.model_dump()
+
+    agent = HealthTrainerAgent(settings=settings, context=context or None)
+
+    # Single-turn: provide vitals + exercise history + equipment
+    vitals = case.health_trainer_vitals or {}
+    msg = (
+        f"I'm {vitals.get('age', 25)} years old, {vitals.get('gender', 'Male')}. "
+        f"Height: {vitals.get('height_cm', 170)} cm, Weight: {vitals.get('weight_kg', 70)} kg. "
+        f"I exercise {vitals.get('workout_frequency_per_week', 0)} days per week, "
+        f"about {vitals.get('session_duration_hours', 0)} hours per session. "
+        f"I have basic home dumbbells. No specific body part focus. No injuries."
+    )
+    agent.chat(msg)
+    return agent.result(summary="Evaluation run")
+
+
 # -- Mock I/O ----------------------------------------------------------------
 
 
@@ -89,12 +120,24 @@ async def evaluate_case(
         genomics_result = await run_genomics(case, settings)
         doctor_result = await run_doctor(case, settings)
 
+    # Health trainer (only for health_trainer decision cases)
+    health_trainer_result = None
+    if case.expected.decision == "health_trainer":
+        if mock:
+            health_trainer_result = outputs.get("health_trainer")  # type: ignore[possibly-undefined]
+        else:
+            health_trainer_result = await run_health_trainer(
+                case, settings, genomics_result, doctor_result
+            )
+
     if save and not mock:
         results_dict = {}
         if genomics_result:
             results_dict["genomics"] = genomics_result
         if doctor_result:
             results_dict["doctor"] = doctor_result
+        if health_trainer_result:
+            results_dict["health_trainer"] = health_trainer_result
         save_outputs(case, results_dict, MOCK_DIR)
 
     # Layer 1: Tool accuracy
@@ -103,6 +146,8 @@ async def evaluate_case(
         metrics.append(score_tool_accuracy(genomics_result, case))
     if doctor_result:
         metrics.append(score_tool_accuracy(doctor_result, case))
+    if health_trainer_result:
+        metrics.append(score_tool_accuracy(health_trainer_result, case))
 
     # Layer 3: Decision correctness
     if genomics_result and doctor_result:
@@ -111,7 +156,7 @@ async def evaluate_case(
     # Layer 2: LLM-as-judge (skip in mock unless judge is also mocked)
     judge_scores: dict[str, JudgeScore] = {}
     if not mock:
-        for agent_result in [genomics_result, doctor_result]:
+        for agent_result in [genomics_result, doctor_result, health_trainer_result]:
             if agent_result:
                 judge_scores[agent_result.agent] = await judge_agent(
                     agent_result, case, settings

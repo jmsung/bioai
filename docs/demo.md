@@ -66,19 +66,20 @@ We show two patients with the same clinical reading — and completely different
 - [x] `models.py` — shared Pydantic contracts
 - [x] Genomics Agent — DNA classification (DMT1/DMT2/NONDM)
 - [x] Doctor Agent — conversational intake → classify_diabetes → recommendation
-- [ ] `scripts/run.py` — CLI to run the two-agent pipeline on a case
+- [x] Health Trainer Agent — exercise prescription with clinical rules (ADA 2023)
+- [ ] `scripts/run.py` — CLI to run the full pipeline on a case
 - [ ] Streamlit: Patient Intake + DNA Analysis + Decision tabs
 
 ### P1 — Should Have
 - [ ] Pharmacology Agent — DNA-matched drug recommendations
-- [ ] Evaluation framework with LLM-as-judge
-- [ ] Ralph Loop (1-2 iterations on doctor/genomics prompts)
-- [ ] Case 3 (clinical override) fully demonstrated
+- [x] Evaluation framework with LLM-as-judge (13/13 pass, 3 agents evaluated)
+- [x] Ralph Loop (3 iterations — improved health_trainer + doctor prompts)
+- [ ] Case 3 (clinical override) fully demonstrated in dashboard
 
 ### P2 — Nice to Have
 - [ ] Remaining agents (Transcriptomics, Proteomics, Literature, Clinical Guidelines)
 - [ ] Streamlit Ralph Loop tab
-- [ ] All 4 demo cases pre-cached
+- [x] All 4 demo cases pre-cached (mock outputs saved)
 
 ### Explicitly Skip
 - GPU-requiring models (ESM-2, DNABERT-2, AlphaFold)

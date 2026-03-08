@@ -16,6 +16,9 @@ class ExpectedOutput(BaseModel):
     clinical_prediction: Literal["Diabetic", "Non-Diabetic"] | None = None
     decision: Literal["hospital", "reconsider", "health_trainer"]
     drug_class: str | None = None
+    # Health trainer ground truth (only for health_trainer decision)
+    fitness_level: Literal["beginner", "intermediate", "advanced"] | None = None
+    workout_type: str | None = None  # Cardio, Strength, Flexibility, HIIT
 
 
 class EvalCase(BaseModel):
@@ -28,6 +31,7 @@ class EvalCase(BaseModel):
     dna_sequence: str | None = None
     clinical_features: dict[str, float] | None = None
     patient_description: str | None = None
+    health_trainer_vitals: dict[str, float | int | str] | None = None
     # Ground truth
     expected: ExpectedOutput
 
@@ -44,6 +48,7 @@ def _build_cases() -> list[EvalCase]:
     inputs = _load_inputs()
     dna = inputs["dna_sequences"] if inputs else {}
     clinical = inputs["clinical_features"] if inputs else {}
+    ht_vitals = inputs.get("health_trainer_vitals", {}) if inputs else {}
 
     return [
         EvalCase(
@@ -101,10 +106,13 @@ def _build_cases() -> list[EvalCase]:
             ),
             dna_sequence=dna.get("NONDM"),
             clinical_features=clinical.get("non_diabetic"),
+            health_trainer_vitals=ht_vitals.get("case-4"),
             expected=ExpectedOutput(
                 dna_class="NONDM",
                 clinical_prediction="Non-Diabetic",
                 decision="health_trainer",
+                fitness_level="beginner",
+                workout_type="Cardio",
             ),
         ),
     ]

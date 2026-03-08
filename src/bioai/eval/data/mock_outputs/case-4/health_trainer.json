@@ -1,0 +1,43 @@
+{
+  "agent": "health_trainer",
+  "status": "success",
+  "findings": {
+    "fitness_level": "beginner",
+    "goals": [],
+    "recommended_exercises": [
+      {
+        "Name": "Running",
+        "Type": "Cardio",
+        "BodyPart": "Full Body",
+        "Equipment": "Bodyweight",
+        "Level": "Beginner",
+        "Description": "Sustained jogging or running at moderate to high intensity",
+        "Benefits": "Improves cardiovascular fitness burns calories and boosts mood",
+        "CaloriesPerMinute": 11
+      },
+      {
+        "Name": "Jump Rope",
+        "Type": "Cardio",
+        "BodyPart": "Full Body",
+        "Equipment": "Bodyweight",
+        "Level": "Beginner",
+        "Description": "Continuously jump over a rotating rope",
+        "Benefits": "Highly efficient cardio improves coordination and agility",
+        "CaloriesPerMinute": 12
+      },
+      {
+        "Name": "Jumping Jacks",
+        "Type": "Cardio",
+        "BodyPart": "Full Body",
+        "Equipment": "Bodyweight",
+        "Level": "Beginner",
+        "Description": "Jump feet apart while raising arms overhead then return",
+        "Benefits": "Simple effective warm-up and cardio exercise",
+        "CaloriesPerMinute": 7
+      }
+    ],
+    "weekly_plan": "Evaluation run"
+  },
+  "summary": "Evaluation run",
+  "error": null
+}

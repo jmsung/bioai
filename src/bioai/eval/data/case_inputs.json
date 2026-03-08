@@ -24,5 +24,15 @@
       "diabetes_pedigree_function": 0.167,
       "age": 21
     }
+  },
+  "health_trainer_vitals": {
+    "case-4": {
+      "age": 21,
+      "gender": "Male",
+      "height_cm": 170.0,
+      "weight_kg": 81.2,
+      "workout_frequency_per_week": 0,
+      "session_duration_hours": 0.0
+    }
   }
 }

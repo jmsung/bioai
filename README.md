@@ -13,14 +13,16 @@ Patient Case → Orchestrator → [6 Agents in Parallel] → Blackboard → Synt
 
 ## Agents
 
-| Agent | Domain | Data Sources |
-|-------|--------|-------------|
-| Genomics | Variant interpretation | myvariant.info, ClinVar |
-| Transcriptomics | Gene expression | GSEApy, PAM50 |
-| Proteomics | Biomarker inference | UniProt, STRING DB |
-| Pharmacology | Drug interactions | DGIpy, OpenFDA |
-| Clinical Guidelines | Medical guidelines | JSON knowledge base |
-| Literature Review | Publications | PubMed, Semantic Scholar |
+| Agent | Domain | Backend | Status |
+|-------|--------|---------|--------|
+| **Genomics** | DNA → DMT1/DMT2/NONDM | Pre-trained CNN (3-mer, 84%) | Implemented + evaluated |
+| **Doctor** | Conversational intake → Diabetic/Non-Diabetic | Pre-trained MLP (Pima, 75%) | Implemented + evaluated |
+| **Health Trainer** | Exercise prescription with clinical rules | ADA 2023 rules + 50-exercise DB | Implemented + evaluated |
+| Pharmacology | Drug interactions | DGIpy, OpenFDA | Stub |
+| Transcriptomics | Gene expression | GSEApy, PAM50 | Stub |
+| Proteomics | Biomarker inference | UniProt, STRING DB | Stub |
+| Clinical Guidelines | Medical guidelines | JSON knowledge base | Stub |
+| Literature Review | Publications | PubMed, Semantic Scholar | Stub |
 
 ## Quick Start
 
