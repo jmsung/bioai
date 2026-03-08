@@ -274,7 +274,7 @@ Cost: ~$0.15/run. Budget: ~$5-10 for hackathon.
 ```
 src/bioai/
 ├── config.py                  Pydantic settings (models, API keys, paths)
-├── models.py                  AgentResult, GenomicsFindings, DoctorFindings, TranscriptomicsFindings, PharmacologyFindings, HealthTrainerFindings
+├── models.py                  AgentResult, GenomicsFindings, DoctorFindings, TranscriptomicsFindings, ProteomicsFindings, MetabolomicsFindings, PharmacologyFindings, HealthTrainerFindings
 ├── blackboard.py              Shared state for agent communication
 ├── orchestrator.py            2-phase: parallel agents → synthesis
 ├── agents/
@@ -284,7 +284,8 @@ src/bioai/
 │   ├── health_trainer.py      Exercise prescription with clinical context
 │   ├── transcriptomics.py     Gene expression pathway analysis + subtype + false positive filter
 │   ├── pharmacology.py        ADA guideline medication recommendation
-│   ├── proteomics.py          Protein biomarkers (YH in progress)
+│   ├── proteomics.py          Protein biomarker analysis (tool-use loop, scaffold for YH)
+│   ├── metabolomics.py        Metabolic profile analysis (tool-use loop, scaffold for YH)
 │   ├── clinical.py            Guidelines knowledge base (stub)
 │   └── literature.py          PubMed, Semantic Scholar (stub)
 ├── tools/
@@ -293,12 +294,16 @@ src/bioai/
 │   ├── workout_type_classifier.py     ADA 2023 clinical rules
 │   ├── exercise_recommender.py        50-exercise CSV lookup
 │   ├── gene_expression_analyzer.py    GSE26168 z-score: gene profile → pathways/subtype/risks
+│   ├── protein_biomarker_analyzer.py  Protein biomarker analysis (stub for YH)
+│   ├── metabolic_profile_analyzer.py  Metabolic profile analysis (stub for YH)
 │   └── drug_recommender.py            ADA guideline medication scoring + recommendation
 ├── prompts/                   System prompts as .txt (Ralph Loop edits these)
 │   ├── genomics.txt
 │   ├── doctor.txt
 │   ├── health_trainer.txt
 │   ├── transcriptomics.txt
+│   ├── proteomics.txt
+│   ├── metabolomics.txt
 │   └── pharmacology.txt
 └── eval/
     ├── cases.py               4 test cases with ground truth

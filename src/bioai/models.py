@@ -69,6 +69,27 @@ class TranscriptomicsFindings(BaseModel):
     interpretation: str
 
 
+class ProteomicsFindings(BaseModel):
+    biomarker_scores: dict[str, float]
+    elevated_biomarkers: list[str]
+    biomarker_panel: str
+    risk_level: RiskLevel
+    complication_evidence: list[dict[str, str]]
+    diabetes_confirmed: dict[str, Any]
+    interpretation: str
+
+
+class MetabolomicsFindings(BaseModel):
+    metabolite_scores: dict[str, float]
+    elevated_metabolites: list[str]
+    insulin_resistance_score: float
+    metabolic_pattern: str
+    risk_level: RiskLevel
+    subtype_refinement: dict[str, str]
+    diabetes_confirmed: dict[str, Any]
+    interpretation: str
+
+
 class PharmacologyFindings(BaseModel):
     diabetes_subtype: str
     primary_medications: list[dict[str, Any]]
@@ -87,7 +108,7 @@ class HealthTrainerFindings(BaseModel):
 class AgentResult(BaseModel):
     agent: str
     status: AgentStatus
-    findings: GenomicsFindings | DoctorFindings | TranscriptomicsFindings | PharmacologyFindings | HealthTrainerFindings | None = None
+    findings: GenomicsFindings | DoctorFindings | TranscriptomicsFindings | ProteomicsFindings | MetabolomicsFindings | PharmacologyFindings | HealthTrainerFindings | None = None
     summary: str
     error: str | None = None
 

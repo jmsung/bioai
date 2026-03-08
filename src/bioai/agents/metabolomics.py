@@ -1,4 +1,4 @@
-"""Proteomics agent for protein biomarker analysis."""
+"""Metabolomics agent for metabolic profile analysis."""
 
 from pathlib import Path
 
@@ -6,32 +6,32 @@ import anthropic
 
 from bioai.agents.base import BaseAgent
 from bioai.config import Settings
-from bioai.models import AgentResult, AgentStatus, ProteomicsFindings, RiskLevel
-from bioai.tools.protein_biomarker_analyzer import analyze_protein_biomarkers
+from bioai.models import AgentResult, AgentStatus, MetabolomicsFindings, RiskLevel
+from bioai.tools.metabolic_profile_analyzer import analyze_metabolic_profile
 
-_PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "proteomics.txt"
+_PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "metabolomics.txt"
 
 _TOOL_DEF = {
-    "name": "analyze_protein_biomarkers",
+    "name": "analyze_metabolic_profile",
     "description": (
-        "Analyze protein biomarker levels for diabetes-related functional markers. "
-        "Takes a dictionary of protein names to abundance/concentration values and returns "
-        "biomarker scores, elevated biomarkers, panel classification, risk level, "
-        "complication evidence, and diabetes confirmation."
+        "Analyze metabolic profile for diabetes-related metabolic state. "
+        "Takes a dictionary of metabolite names to concentration values and returns "
+        "metabolite scores, insulin resistance score, metabolic pattern, risk level, "
+        "subtype refinement, and diabetes confirmation."
     ),
     "input_schema": {
         "type": "object",
         "properties": {
-            "protein_levels": {
+            "metabolite_levels": {
                 "type": "object",
                 "description": (
-                    "Dictionary mapping protein names to abundance/concentration values. "
-                    'Example: {"CRP": 8.5, "TNF_alpha": 45.2, "IL6": 12.1}'
+                    "Dictionary mapping metabolite names to concentration values. "
+                    'Example: {"triglycerides": 250.0, "leucine": 180.5, "HDL": 35.0}'
                 ),
                 "additionalProperties": {"type": "number"},
             }
         },
-        "required": ["protein_levels"],
+        "required": ["metabolite_levels"],
     },
 }
 
@@ -72,16 +72,16 @@ def _load_prompt(context: dict | None = None) -> str:
     return template.replace("{clinical_context}", clinical_context)
 
 
-class ProteomicsAgent(BaseAgent):
-    name = "proteomics"
-    role = "Protein biomarker analysis for diabetes functional confirmation"
+class MetabolomicsAgent(BaseAgent):
+    name = "metabolomics"
+    role = "Metabolic profile analysis for diabetes metabolic state assessment"
 
     def __init__(self, settings: Settings | None = None):
         self._settings = settings or Settings.from_env()
         self._client = anthropic.Anthropic(api_key=self._settings.api_key)
 
     async def analyze(self, query: str, context: dict | None = None) -> AgentResult:
-        """Analyze protein biomarker data for diabetes-related functional markers."""
+        """Analyze metabolic profile for diabetes-related metabolic state."""
         messages = [{"role": "user", "content": query}]
 
         try:
@@ -93,7 +93,7 @@ class ProteomicsAgent(BaseAgent):
                 messages=messages,
             )
 
-            findings: ProteomicsFindings | None = None
+            findings: MetabolomicsFindings | None = None
 
             while response.stop_reason == "tool_use":
                 tool_calls = [b for b in response.content if b.type == "tool_use"]
@@ -101,14 +101,15 @@ class ProteomicsAgent(BaseAgent):
 
                 tool_result_content = []
                 for call in tool_calls:
-                    if call.name == "analyze_protein_biomarkers":
-                        raw = analyze_protein_biomarkers(call.input["protein_levels"])
-                        findings = ProteomicsFindings(
-                            biomarker_scores=raw["biomarker_scores"],
-                            elevated_biomarkers=raw["elevated_biomarkers"],
-                            biomarker_panel=raw["biomarker_panel"],
+                    if call.name == "analyze_metabolic_profile":
+                        raw = analyze_metabolic_profile(call.input["metabolite_levels"])
+                        findings = MetabolomicsFindings(
+                            metabolite_scores=raw["metabolite_scores"],
+                            elevated_metabolites=raw["elevated_metabolites"],
+                            insulin_resistance_score=raw["insulin_resistance_score"],
+                            metabolic_pattern=raw["metabolic_pattern"],
                             risk_level=_RISK_MAP[raw["risk_level"]],
-                            complication_evidence=raw["complication_evidence"],
+                            subtype_refinement=raw["subtype_refinement"],
                             diabetes_confirmed=raw["diabetes_confirmed"],
                             interpretation=raw["interpretation"],
                         )
