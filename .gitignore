@@ -6,6 +6,10 @@ data/diabetes/*
 !data/diabetes/README.md
 !data/diabetes/raw/
 !data/diabetes/models/
+!data/exercises/
+data/exercises/*
+!data/exercises/README.md
+!data/exercises/raw/
 __pycache__/
 *.py[cod]
 *.egg-info/

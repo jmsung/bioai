@@ -1,0 +1,51 @@
+Name,Type,BodyPart,Equipment,Level,Description,Benefits,CaloriesPerMinute
+Barbell Bench Press,Strength,Chest,Barbell,Intermediate,Lie on a bench and press a barbell upward from chest level,Builds chest mass and upper body strength,8
+Push-Up,Strength,Chest,Bodyweight,Beginner,Lower your body to the floor and push back up with arms,Strengthens chest shoulders and triceps no equipment needed,5
+Incline Dumbbell Press,Strength,Chest,Dumbbell,Intermediate,Press dumbbells upward on an inclined bench,Targets upper chest and front deltoids,7
+Cable Fly,Strength,Chest,Machine,Intermediate,Bring cable handles together in a hugging motion,Isolates pectoral muscles with constant tension,6
+Dips,Strength,Chest,Bodyweight,Intermediate,Lower and raise body using parallel bars,Develops lower chest and triceps,7
+Barbell Deadlift,Strength,Back,Barbell,Intermediate,Lift a loaded barbell from the floor to hip level,Builds full posterior chain strength and mass,10
+Pull-Up,Strength,Back,Bodyweight,Intermediate,Hang from a bar and pull body up until chin clears,Develops lat width and upper back strength,8
+Barbell Row,Strength,Back,Barbell,Intermediate,Hinge forward and row barbell to lower chest,Builds mid-back thickness and biceps,8
+Lat Pulldown,Strength,Back,Machine,Beginner,Pull a cable bar down to upper chest while seated,Great lat builder especially for beginners,6
+Seated Cable Row,Strength,Back,Machine,Beginner,Pull cable handle toward abdomen while seated upright,Builds mid-back and improves posture,6
+Overhead Press,Strength,Shoulders,Barbell,Intermediate,Press a barbell overhead from shoulder height,Develops overall shoulder mass and strength,8
+Dumbbell Lateral Raise,Strength,Shoulders,Dumbbell,Beginner,Raise dumbbells out to the sides to shoulder height,Isolates lateral deltoid for shoulder width,5
+Face Pull,Strength,Shoulders,Machine,Beginner,Pull rope attachment toward face with elbows high,Strengthens rear delts and improves shoulder health,5
+Arnold Press,Strength,Shoulders,Dumbbell,Intermediate,Rotate dumbbells while pressing overhead,Works all three heads of the deltoid,7
+Shrugs,Strength,Shoulders,Dumbbell,Beginner,Lift shoulders straight up while holding weights,Builds trapezius and upper back,5
+Barbell Bicep Curl,Strength,Arms,Barbell,Beginner,Curl a barbell up toward shoulders,Classic bicep mass builder,5
+Tricep Pushdown,Strength,Arms,Machine,Beginner,Push cable bar downward extending arms fully,Isolates triceps for definition and size,5
+Hammer Curl,Strength,Arms,Dumbbell,Beginner,Curl dumbbells with neutral wrist position,Builds brachialis and overall arm thickness,5
+Skull Crusher,Strength,Arms,Barbell,Intermediate,Lower barbell to forehead from extended arms,Excellent tricep mass builder,6
+Diamond Push-Up,Strength,Arms,Bodyweight,Intermediate,Push-up with hands close together in diamond shape,Emphasizes triceps with no equipment needed,6
+Plank,Strength,Core,Bodyweight,Beginner,Hold a rigid straight-body position on forearms,Builds core stability and endurance,4
+Crunch,Strength,Core,Bodyweight,Beginner,Curl upper body off floor toward knees,Targets rectus abdominis directly,4
+Russian Twist,Strength,Core,Bodyweight,Beginner,Rotate torso side to side while seated with feet raised,Works obliques and rotational core strength,5
+Hanging Leg Raise,Strength,Core,Bodyweight,Intermediate,Hang from a bar and raise legs to 90 degrees,Builds lower abs and hip flexors,6
+Cable Woodchop,Strength,Core,Machine,Intermediate,Pull cable diagonally across body in chopping motion,Develops obliques and functional rotational power,6
+Barbell Squat,Strength,Legs,Barbell,Intermediate,Lower body until thighs are parallel to floor with bar on back,King of leg exercises for mass and strength,10
+Romanian Deadlift,Strength,Legs,Barbell,Intermediate,Hinge at hips lowering bar along legs while keeping back flat,Builds hamstrings and glutes,9
+Leg Press,Strength,Legs,Machine,Beginner,Push platform away with legs from seated position,Safe quad and glute builder for beginners,8
+Lunges,Strength,Legs,Dumbbell,Beginner,Step forward and lower back knee toward the floor,Improves leg strength balance and coordination,7
+Calf Raise,Strength,Legs,Machine,Beginner,Rise onto toes while standing on edge of platform,Isolates gastrocnemius and soleus,4
+Running,Cardio,Full Body,Bodyweight,Beginner,Sustained jogging or running at moderate to high intensity,Improves cardiovascular fitness burns calories and boosts mood,11
+Cycling,Cardio,Legs,Machine,Beginner,Pedal a stationary or road bike at sustained effort,Low-impact cardio excellent for leg endurance,9
+Rowing Machine,Cardio,Full Body,Machine,Intermediate,Drive legs pull cable and lean back in rowing motion,Full-body cardio that also builds back and core,11
+Jump Rope,Cardio,Full Body,Bodyweight,Beginner,Continuously jump over a rotating rope,Highly efficient cardio improves coordination and agility,12
+Burpee,Cardio,Full Body,Bodyweight,Intermediate,Combine squat jump push-up and jump in one movement,High-intensity full-body conditioning exercise,12
+Mountain Climber,Cardio,Core,Bodyweight,Beginner,Drive knees toward chest alternately in plank position,Elevates heart rate while targeting core,10
+High Knees,Cardio,Legs,Bodyweight,Beginner,Run in place driving knees to hip height rapidly,Burns calories and improves running mechanics,10
+Box Jump,Plyometric,Legs,Bodyweight,Intermediate,Jump from the floor landing softly on a raised box,Develops explosive lower-body power,10
+Jumping Jacks,Cardio,Full Body,Bodyweight,Beginner,Jump feet apart while raising arms overhead then return,Simple effective warm-up and cardio exercise,7
+Battle Ropes,Cardio,Full Body,Machine,Intermediate,Create waves in heavy ropes with alternating arm movements,Intense conditioning builds upper body endurance,13
+Yoga Sun Salutation,Flexibility,Full Body,Bodyweight,Beginner,Flow through a sequence of linked yoga poses,Improves flexibility balance and mind-body connection,4
+Foam Rolling IT Band,Flexibility,Legs,Bodyweight,Beginner,Slowly roll outer thigh along a foam roller,Releases tight IT band and reduces knee pain,2
+Hip Flexor Stretch,Flexibility,Legs,Bodyweight,Beginner,Kneel and lunge forward to stretch front of hip,Counteracts sitting and reduces lower back pain,2
+Child's Pose,Flexibility,Back,Bodyweight,Beginner,Kneel and reach arms forward while lowering chest to floor,Gently stretches back hips and thighs,2
+Pigeon Pose,Flexibility,Legs,Bodyweight,Intermediate,Extend one leg behind while folding forward over bent leg,Deep hip opener especially for piriformis,2
+Kettlebell Swing,Strength,Full Body,Dumbbell,Intermediate,Hinge at hips and drive a kettlebell forward with hip extension,Builds posterior chain power and cardiovascular conditioning,12
+TRX Row,Strength,Back,Machine,Beginner,Pull body toward anchor point using suspension straps,Scalable row that builds back and core stability,6
+Sled Push,Cardio,Full Body,Machine,Intermediate,Drive a weighted sled forward with powerful leg drive,Brutal conditioning that builds lower body and work capacity,14
+Wall Sit,Strength,Legs,Bodyweight,Beginner,Hold squat position with back against a wall,Builds quad endurance and mental toughness,4
+Farmer's Walk,Strength,Full Body,Dumbbell,Beginner,Carry heavy dumbbells by sides while walking,Builds grip strength core stability and full body conditioning,8
