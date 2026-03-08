@@ -1,11 +1,15 @@
 """Genomics agent for variant interpretation and DNA risk classification."""
 
+from pathlib import Path
+
 import anthropic
 
 from bioai.agents.base import BaseAgent
 from bioai.config import Settings
 from bioai.models import AgentResult, AgentStatus, GenomicsFindings, RiskLevel
 from bioai.tools.dna_classifier import classify_dna
+
+_PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "genomics.txt"
 
 _TOOL_DEF = {
     "name": "classify_dna",
@@ -25,11 +29,8 @@ _TOOL_DEF = {
     },
 }
 
-_SYSTEM_PROMPT = (
-    "You are a genomics specialist agent. "
-    "When given a DNA sequence, use the classify_dna tool to assess diabetes-related genomic risk. "
-    "Interpret the result and provide a concise clinical summary."
-)
+def _load_prompt() -> str:
+    return _PROMPT_PATH.read_text().strip()
 
 _RISK_MAP = {
     "DMT1": RiskLevel.HIGH,
@@ -54,7 +55,7 @@ class GenomicsAgent(BaseAgent):
             response = self._client.messages.create(
                 model=self._settings.agent_model,
                 max_tokens=self._settings.max_tokens,
-                system=_SYSTEM_PROMPT,
+                system=_load_prompt(),
                 tools=[_TOOL_DEF],
                 messages=messages,
             )
@@ -86,7 +87,7 @@ class GenomicsAgent(BaseAgent):
                 response = self._client.messages.create(
                     model=self._settings.agent_model,
                     max_tokens=1024,
-                    system=_SYSTEM_PROMPT,
+                    system=_load_prompt(),
                     tools=[_TOOL_DEF],
                     messages=messages,
                 )

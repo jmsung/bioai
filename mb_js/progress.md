@@ -2,33 +2,33 @@
 
 ## Active
 
-## Hold
-
-## Todo
-
-### Phase 1: Setup & Models
-- [x] Extend `pyproject.toml` with all deps, `uv sync`
-- [x] Extend `src/bioai/config.py` — Pydantic BaseModel, multi-model fields, `from_env()`, paths
-
-### Phase 2: Core Framework
-> **Blocked**: `models.py` and `blackboard.py` must land first (YH owns)
-- [ ] Rewrite `src/bioai/agents/base.py` — BaseAgent with agentic tool-use loop
-- [ ] Rewrite `src/bioai/orchestrator.py` — 2-phase (parallel agents → synthesis)
-- [ ] Create `src/bioai/synthesis.py` — Claude-powered final report generation
-
 ### Phase 3: Evaluation Framework
-- [ ] `eval/metrics.py` — automated scoring
-- [ ] `eval/judge.py` — LLM-as-judge
-- [ ] `eval/cases.py` — 3 test cases with ground truth
-- [ ] `eval/ralph.py` — Ralph Loop prompt optimizer
-- [ ] `scripts/evaluate.py` — CLI runner
+- [x] `eval/cases.py` — 4 test cases with ground truth (EvalCase, ExpectedOutput)
+- [x] `eval/metrics.py` — deterministic scoring (tool accuracy + decision matrix)
+- [x] `eval/judge.py` — LLM-as-judge (relevance, completeness, accuracy, safety)
+- [x] `eval/ralph.py` — Ralph Loop v1 (find weakest → rewrite prompt)
+- [x] `scripts/evaluate.py` — CLI runner (--mock, --save, --ralph --iter N)
+
+#### Design decisions
+- Focus on 2-agent demo (Genomics + Doctor) first, scalable for new agents
+- Ralph Loop v1: simple iterative loop — eval → find weakest → update prompt. Improve iteration process later
+- Support both real mode (Claude API) and mock mode (pre-recorded outputs)
+- **TODO**: decide test case inputs (DNA sequences, clinical features) — deferred
+
+## Hold
 
 ### Phase 4: Integration & Polish
 - [ ] End-to-end test: `scripts/run.py --case 1`
 - [ ] Wire all 6 agents into orchestrator
 - [ ] Bug fixes, error handling, polish
 
+## Todo
+
 ## Completed
+
+### Phase 2: Core Framework — **Reassigned to YH**
+- YH owns: BaseAgent rewrite, orchestrator, synthesis, models, blackboard
+- YH landed: genomics agent+tool, doctor agent+tool, diabetes classifier
 
 ### phase1-setup-models — Config rewrite
 - [x] `config.py` → Pydantic BaseModel with multi-model fields, `from_env()`, paths

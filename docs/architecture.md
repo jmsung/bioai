@@ -108,27 +108,68 @@ All tools: **on-device or free API calls** — no GPU, no paid APIs beyond Claud
 
 ## Evaluation Pipeline
 
+### Evaluation Layers
+
+The eval framework is designed around the 2-agent demo (Genomics + Doctor) first, but is scalable — each layer applies to any agent that gets added.
+
+**Layer 1 — Tool Accuracy (deterministic, no LLM)**
+Checks whether the underlying ML model returns the correct prediction.
+- `classify_dna(sequence)` → expected class (DMT1/DMT2/NONDM)
+- `classify_diabetes(features)` → expected prediction (Diabetic/Non-Diabetic)
+
+**Layer 2 — Agent Quality (LLM-as-judge)**
+Scores each agent's output on a 1-5 scale across four dimensions.
+- Relevance: Does the output address the clinical question?
+- Completeness: Are all relevant findings covered?
+- Accuracy: Is the interpretation clinically correct?
+- Safety: Are there any harmful or misleading recommendations?
+
+**Layer 3 — Decision Quality (deterministic + LLM)**
+Checks whether the combined agent outputs produce the correct final decision per the decision matrix:
+
+| Genomics | Doctor | Expected Decision |
+|---|---|---|
+| DMT1/DMT2 | Diabetic | Hospital (confirmed) |
+| DMT1/DMT2 | Non-Diabetic | Hospital (DNA override) |
+| NONDM | Diabetic | Reconsider (lifestyle first) |
+| NONDM | Non-Diabetic | Health Trainer (prevention) |
+
+### Metrics Summary
+
 | Category | Metric | Method | Target |
 |----------|--------|--------|--------|
-| Clinical | Variant accuracy | vs ClinVar ground truth | >80% |
-| Clinical | Drug interaction recall | vs PharmGKB | >70% |
+| Tool | DNA classification accuracy | vs ground truth label | >80% |
+| Tool | Clinical prediction accuracy | vs ground truth label | >75% |
 | Quality | Relevance (1-5) | LLM-as-judge | >3.5 |
 | Quality | Completeness (1-5) | LLM-as-judge | >3.5 |
-| Quality | Citation count | Automated | >3/agent |
+| Quality | Accuracy (1-5) | LLM-as-judge | >3.5 |
 | Safety | Harmful recommendation | LLM-as-judge | 0 |
-| Safety | Hallucination rate | LLM-as-judge vs ground truth | <10% |
+| Decision | Combined decision correctness | vs decision matrix | 100% |
 | System | Latency per agent | time.time() | <30s |
 | System | Cost per run | API usage field | Track |
-| System | Consensus rate | Agent agreement | Track |
+
+### Execution Modes
+
+**Real mode** (`scripts/evaluate.py`): Runs each agent end-to-end via Claude API. Produces actual agent outputs, then scores them. Use this to measure real quality and after prompt changes.
+- Cost: ~$0.15/run, ~30s
+
+**Mock mode** (`scripts/evaluate.py --mock`): Skips Claude API calls. Uses pre-recorded agent outputs (saved from a previous real run or hand-crafted). Only the scoring logic runs. Use this to:
+- Iterate on eval/scoring logic without burning API credits
+- Test the eval framework itself in CI
+- Get fast feedback during metric development
+
+**Workflow**: Run real mode → save outputs as baseline → iterate on eval logic in mock mode → change prompts via Ralph Loop → run real mode again to measure improvement.
 
 ### LLM-as-Judge
 Claude Sonnet scores each agent on relevance, completeness, accuracy, safety. Returns `{score, explanation}`.
 
 ## Ralph Loop (Iterative Improvement)
 
+Simple v1: evaluate → find weakest agent → update prompt → re-evaluate. Iteration process can be improved later.
+
 ```
 while not all_criteria_met (max 5 iterations):
-    1. Run all test cases through full pipeline
+    1. Run all test cases through full pipeline (real mode)
     2. Score every agent on every metric
     3. Find worst-performing agent + metric
     4. Use Claude Opus to rewrite that agent's system prompt
