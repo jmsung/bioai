@@ -9,6 +9,8 @@
 | Exercise | Best 50 Exercises (Kaggle) | `data/exercises/` | Exercise recommendation lookup |
 | Fitness | Gym Members Exercise Dataset (Kaggle) | `data/gym_members/` | Health trainer evaluation + future ML |
 | Transcriptomics | GSE26168 Blood Transcriptome (GEO) | `data/transcriptomics/` | Gene expression pathway analysis (110 genes, 24 samples) |
+| Proteomics | TBD (YH in progress) | `data/proteomics/` | Inflammatory/signaling protein biomarkers, kidney/CV injury markers |
+| Metabolomics | TBD (YH in progress) | `data/metabolomics/` | Insulin resistance signals, lipid/BCAA/acylcarnitine patterns |
 | Genomics | ClinVar `variant_summary.txt` (~50MB) | `data/clinvar/` | Variant → disease lookup |
 | Genomics + Transcriptomics | METABRIC from Kaggle (~50MB) | `data/metabric/` | Mutations + mRNA z-scores + clinical |
 | Pharmacology | PharmGKB clinical annotations | `data/pharmgkb/` | Drug-gene associations |

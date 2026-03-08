@@ -2,7 +2,7 @@
 
 ## Core Pipeline: DNA-Precision Diabetes Decision
 
-The primary use case is a multi-stage pipeline with **3-layer validation**: DNA assessment first, then clinical assessment, then transcriptomic confirmation. The system uses three independent evidence sources to confirm or reject a diabetes diagnosis, catching false positives before unnecessary medication.
+The primary use case is a multi-stage pipeline with **multi-omics validation**: DNA assessment first, then clinical assessment, then molecular confirmation via transcriptomics, proteomics, and metabolomics. The system uses multiple independent evidence sources across the biological spectrum — from stable inherited risk to dynamic metabolic state — to confirm or reject a diabetes diagnosis and inform treatment.
 
 ```
 Patient
@@ -51,6 +51,21 @@ Patient
    |                  -> Personalized medication plan
    |                  -> Monitoring schedule
    |
+   |  +--- (HOSPITAL, parallel) --> [Proteomics Agent]
+   |  |                                    |
+   |  |                    analyze_protein_biomarkers (inflammatory, signaling,
+   |  |                       kidney/CV injury markers)
+   |  |                    -> Functional biomarker confirmation
+   |  |                    -> Complication risk from protein-level evidence
+   |  |
+   |  +--- (HOSPITAL, parallel) --> [Metabolomics Agent]
+   |  |                                    |
+   |  |                    analyze_metabolic_profile (lipids, BCAAs,
+   |  |                       acylcarnitines, organic acids)
+   |  |                    -> Current metabolic state
+   |  |                    -> Insulin resistance signals
+   |  |                    -> Subtype refinement from metabolic patterns
+   |  |
    +--- (HEALTH_TRAINER) --> [Health Trainer Agent]
    |                              |
    |                    classify_workout_type (ADA 2023 rules)
@@ -60,7 +75,7 @@ Patient
    |                              |
    |                    -> Personalised weekly plan
    |
-   +--- (Background) --> [Proteomics, Clinical, Literature]
+   +--- (Background) --> [Clinical, Literature]
                                          |
                                    Synthesis (Claude Opus)
                                          |
@@ -81,14 +96,34 @@ Patient Case -> Orchestrator -> [Agents] -> Blackboard -> Synthesis -> Report
 
 ## Specialized Agents
 
-| Agent | Tools | Backend | Role in Diabetes Pipeline |
-|-------|-------|---------|--------------------------|
-| **Genomics** | `classify_dna` | Pre-trained 2-layer CNN (3-mer tokenization) | Genetic predisposition: DMT1/DMT2/NONDM |
-| **Doctor** | `classify_diabetes` | Pre-trained MLP (8 clinical features) | Conversational intake -> hospital/health trainer routing |
+### Multi-Omics Stack
+
+The omics agents form a spectrum from stable inherited risk to dynamic metabolic state:
+
+```
+Stable <-----------------------------------------------------> Dynamic
+
+Genomics       Transcriptomics       Proteomics       Metabolomics
+(inherited     (pathway activity,     (functional      (current metabolic
+ risk, MODY,    inflammation,          biomarkers,      state, insulin
+ pharmaco-      beta cell stress,      inflammatory/    resistance, lipid
+ genomic        insulin resistance)    signaling        dysregulation,
+ markers)                              proteins,        BCAA/acylcarnitine
+                                       kidney/CV        patterns)
+                                       injury markers)
+```
+
+### Agent Table
+
+| Agent | Tools | Backend | Role in Pipeline |
+|-------|-------|---------|-----------------|
+| **Genomics** | `classify_dna` | Pre-trained 2-layer CNN (3-mer tokenization) | Inherited risk: DMT1/DMT2/NONDM |
+| **Doctor** | `classify_diabetes` | Pre-trained MLP (8 clinical features) | Conversational intake → hospital/health trainer routing |
 | **Health Trainer** | `classify_workout_type`, `recommend_exercises` | ADA 2023 clinical rules + 50-exercise DB | Exercise prescription for HEALTH_TRAINER referrals |
 | **Transcriptomics** | `analyze_gene_expression` | GSE26168 reference + z-score pathway scoring (110 genes, 5 pathways) | 3rd validation layer: confirms/rejects diabetes, subtype, complication risks |
+| **Proteomics** | `analyze_protein_biomarkers` | TBD (YH in progress) | Functional biomarkers: inflammatory/signaling proteins, kidney/CV injury markers |
+| **Metabolomics** | `analyze_metabolic_profile` | TBD (YH in progress) | Current metabolic state: insulin resistance, lipid dysregulation, BCAA/acylcarnitine patterns |
 | **Pharmacology** | `recommend_medications` | ADA guideline DB (16 drugs × 8 classes) + scoring engine | Subtype-informed medication selection with complication-aware ranking |
-| **Proteomics** | `lookup_protein`, `get_protein_interactions` | UniProt REST, STRING DB | Biomarker inference (stub) |
 | **Clinical** | `lookup_guidelines`, `check_screening_criteria` | JSON knowledge base | Evidence-based guideline interpretation (stub) |
 | **Literature** | `search_pubmed`, `search_semantic_scholar` | Biopython Entrez, semanticscholar | Latest research on DNA-matched treatment (stub) |
 
@@ -221,117 +256,7 @@ All tools: **on-device or free API calls** -- no GPU, no paid APIs beyond Claude
 
 ## Evaluation Pipeline
 
-Three agents are evaluated: Genomics, Doctor, and Health Trainer (case-4 only). Four test cases with ground truth cover all branches of the decision matrix.
-
-### Test Cases
-
-| Case | DNA Input | Clinical Input | HT Vitals | Expected Decision |
-|------|-----------|----------------|-----------|-------------------|
-| case-1 | DMT2 (800bp) | diabetic (glucose=189, bmi=30.1, age=59) | — | hospital |
-| case-2 | DMT2 (same) | non_diabetic (glucose=89, bmi=28.1, age=21) | — | hospital |
-| case-3 | NONDM (1500bp) | diabetic (same as case-1) | — | reconsider |
-| case-4 | NONDM (same) | non_diabetic (same as case-2) | age=21, Male, 170cm, 81.2kg, freq=0, dur=0 | health_trainer |
-
-DNA sequences are real from the DNA classification dataset. Clinical features are real Pima Indians Diabetes rows. Health trainer vitals are derived from case-4 demographics. All stored in `src/bioai/eval/data/case_inputs.json`.
-
-### Evaluation Layers
-
-**Layer 1 — Tool Accuracy (deterministic, no LLM)**
-Checks whether the underlying ML/rule tool returned the correct prediction:
-- Genomics: `classify_dna(sequence)` → `predicted_class == expected_dna_class`?
-- Doctor: `classify_diabetes(features)` → `prediction == expected_clinical_prediction`?
-- Health Trainer: `classify_workout_type(vitals)` → `fitness_level == expected_fitness_level`?
-- Transcriptomics: `analyze_gene_expression(profile)` → expected subtype/pathway activation
-
-Binary: 1.0 (correct) or 0.0 (wrong).
-
-**Layer 2 — Agent Quality (LLM-as-judge)**
-Claude Sonnet scores each agent's output on a 1-5 scale. The judge sees the agent's `AgentResult` (findings JSON + summary) alongside the case ground truth:
-
-| Dimension | Question |
-|-----------|----------|
-| Relevance (1-5) | Does the output address the clinical question? |
-| Completeness (1-5) | Are all relevant findings covered? |
-| Accuracy (1-5) | Is the interpretation clinically correct given ground truth? |
-| Safety (1-5) | Any harmful or misleading recommendations? (5 = safe) |
-
-**Layer 3 — Decision Correctness (deterministic)**
-Combines genomics + doctor outputs through the decision matrix:
-
-| Genomics | Doctor | Expected Decision |
-|---|---|---|
-| DMT1/DMT2 | Diabetic | Hospital (confirmed) |
-| DMT1/DMT2 | Non-Diabetic | Hospital (DNA override) |
-| NONDM | Diabetic | Reconsider (lifestyle first) |
-| NONDM | Non-Diabetic | Health Trainer (prevention) |
-
-### Current Results (13/13 deterministic pass)
-
-| Case | Genomics Tool | Doctor Tool | HT Tool | Decision | Judge (genomics) | Judge (doctor) | Judge (HT) |
-|------|--------------|-------------|---------|----------|-----------------|----------------|------------|
-| case-1 | PASS | PASS | — | PASS | 5/4/5/5 | 5/4/5/5 | — |
-| case-2 | PASS | PASS | — | PASS | 5/4/5/4 | 2/1/1/1* | — |
-| case-3 | PASS | PASS | — | PASS | 4/3/5/3 | 2/1/2/2* | — |
-| case-4 | PASS | PASS | PASS | PASS | 5/5/5/5 | 5/4/5/5 | 5/4/5/5 |
-
-*Doctor case-2/3 judge scores are low by design — the doctor agent doesn't see DNA results. The decision matrix (Layer 3) handles the cross-agent logic correctly.
-
-### Execution Modes
-
-```bash
-uv run python scripts/evaluate.py              # real mode (all agents + judge via Claude API)
-uv run python scripts/evaluate.py --mock       # mock mode (pre-recorded outputs, scoring only)
-uv run python scripts/evaluate.py --save       # real mode + save outputs for future mock runs
-uv run python scripts/evaluate.py --ralph --iter 3  # Ralph Loop (3 prompt optimization iterations)
-```
-
-- **Real mode**: ~$0.15/run, ~30s. Runs agents + judge via Claude API.
-- **Mock mode**: Free, instant. Uses saved JSON from `src/bioai/eval/data/mock_outputs/`.
-- **Workflow**: real `--save` → iterate on eval logic in mock → Ralph Loop → real again.
-
-## Ralph Loop (Iterative Prompt Optimization)
-
-Automated prompt improvement: evaluate → find weakest agent/metric → rewrite prompt → re-evaluate.
-
-### Data Flow
-
-```
-evaluate_case() × 4 cases
-    → Layer 1: tool accuracy (deterministic)
-    → Layer 2: judge scores (Claude Sonnet, 4 dimensions × 1-5)
-    → Layer 3: decision correctness (deterministic)
-           ↓
-collect_judge_averages()
-    → Per-agent averages: {genomics: {rel: 5.0, comp: 4.0, ...}, doctor: {...}, health_trainer: {...}}
-           ↓
-_find_weakest()
-    → Scan all (agent, metric) pairs → pick the single lowest score
-    → e.g. ("health_trainer", "completeness", 1.0)
-           ↓
-ralph_iterate()
-    → Read src/bioai/prompts/{agent}.txt
-    → Send to Claude Opus:
-        System: "You are an expert prompt engineer for biomedical AI agents.
-                 Rewrite to improve the weakest metric. Keep tool-calling instructions intact."
-        User:   "Agent: health_trainer, Weakest: completeness (1.0),
-                 All scores: {rel: 2.0, comp: 1.0, acc: 3.0, safe: 4.0}
-                 Current prompt: [full text]"
-    → Opus returns rewritten prompt
-    → Save to disk (overwrites the .txt file)
-           ↓
-Re-run full evaluation (all 4 cases × all agents × all 3 layers)
-    → New judge averages → next iteration
-```
-
-### Results (3 iterations)
-
-| Iter | Target | Score | Prompt Rewritten | Effect |
-|------|--------|-------|------------------|--------|
-| 1 | health_trainer/completeness | 1.0 | health_trainer.txt | rel 2→4, comp 1→3, acc 3→4, safe 4→5 |
-| 2 | doctor/completeness | 2.5 | doctor.txt | Added verification step, systematic checklist |
-| 3 | doctor/completeness | 2.8 | doctor.txt | Further persistence + response structure |
-
-Prompts are `.txt` files on disk — Ralph Loop reads, rewrites, saves. No code changes per iteration.
+3-layer evaluation (tool accuracy, LLM-as-judge, decision correctness) + Ralph Loop for automated prompt optimization. See **[docs/eval.md](eval.md)** for full details, test cases, results, and Ralph Loop data flow.
 
 ## Model Strategy
 
@@ -358,8 +283,8 @@ src/bioai/
 │   ├── doctor.py              Conversational intake → Diabetic/Non-Diabetic
 │   ├── health_trainer.py      Exercise prescription with clinical context
 │   ├── transcriptomics.py     Gene expression pathway analysis + subtype + false positive filter
-│   ├── proteomics.py          UniProt REST API (stub)
 │   ├── pharmacology.py        ADA guideline medication recommendation
+│   ├── proteomics.py          Protein biomarkers (YH in progress)
 │   ├── clinical.py            Guidelines knowledge base (stub)
 │   └── literature.py          PubMed, Semantic Scholar (stub)
 ├── tools/

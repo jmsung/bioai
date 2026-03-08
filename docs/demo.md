@@ -85,8 +85,10 @@ We show two patients with the same clinical reading — and completely different
 - [ ] Case 3 (clinical override) fully demonstrated in dashboard
 
 ### P2 — Nice to Have
-- [x] Transcriptomics Agent — 3rd validation layer with false positive filter
-- [ ] Remaining agents (Proteomics, Literature, Clinical Guidelines)
+- [x] Transcriptomics Agent — pathway activity, confirms/rejects diabetes
+- [ ] Proteomics Agent — functional biomarkers (inflammatory/signaling proteins, kidney/CV injury) — YH in progress
+- [ ] Metabolomics Agent — current metabolic state (insulin resistance, lipid/BCAA patterns) — YH in progress
+- [ ] Remaining agents (Literature, Clinical Guidelines)
 - [ ] Streamlit Ralph Loop tab
 - [x] All 4 demo cases pre-cached (mock outputs saved)
 

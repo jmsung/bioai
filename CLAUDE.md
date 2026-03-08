@@ -1,15 +1,15 @@
 # BioAI
 
-Multi-agent healthcare intelligence system — 6 specialized agents analyze patient data and synthesize personalized health assessments.
+Multi-agent healthcare intelligence system — 8 specialized agents analyze patient data and synthesize personalized health assessments with 3-layer validation (DNA + clinical + molecular).
 
 ## Project Structure
 
 ```
 bioai/
 ├── src/bioai/           # Shared package (agents, tools, eval, orchestrator)
-├── scripts/             # Entry points (run.py, evaluate.py, demo.py)
-├── app/                 # Streamlit dashboard
-├── tests/               # Tests (mirror src/ structure)
+├── scripts/             # Entry points (run.py, evaluate.py, process_transcriptomics.py)
+├── app/                 # Streamlit eval dashboard
+├── tests/               # Tests (mirror src/ structure, 90 tests)
 ├── docs/                # Knowledge DB (architecture, vision, data, demo)
 ├── data/                # Datasets (gitignored)
 ├── mb_<dev>/            # Per-developer memory banks (gitignored)
@@ -24,10 +24,13 @@ bioai/
 
 ## Key References
 
-- [docs/architecture.md](docs/architecture.md) — System design, agents, eval, Ralph Loop, model strategy
-- [docs/vision.md](docs/vision.md) — Project vision and capabilities
+- [docs/architecture.md](docs/architecture.md) — System design, agents, pipeline, model strategy
+- [docs/eval.md](docs/eval.md) — Evaluation pipeline, test cases, results, Ralph Loop
+- [docs/vision.md](docs/vision.md) — Project vision: 3-layer precision validation
 - [docs/data.md](docs/data.md) — Datasets, patient cases, data format
 - [docs/demo.md](docs/demo.md) — Demo plan, dashboard, priorities
+- [docs/doctor_agent.md](docs/doctor_agent.md) — Doctor agent design, API, output models
+- [docs/genomics.md](docs/genomics.md) — Genomics agent, CNN model, pipeline
 
 ## Current Focus
 
@@ -47,9 +50,13 @@ bioai/
 ## Commands
 
 ```bash
-uv sync                  # Install dependencies
-uv run pytest            # Run tests
-uv run python scripts/   # Run scripts
+uv sync                                      # Install dependencies
+uv run pytest                                # Run tests (90 tests)
+uv run python scripts/run.py --case 1        # Run pipeline on a case
+uv run python scripts/evaluate.py            # Real eval (agents + judge via API)
+uv run python scripts/evaluate.py --mock     # Mock eval (pre-recorded outputs)
+uv run python scripts/evaluate.py --ralph --iter 3  # Ralph Loop
+uv run streamlit run app/dashboard.py        # Eval dashboard
 ```
 
 ## Memory Bank Setup
