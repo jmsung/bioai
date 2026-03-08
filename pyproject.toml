@@ -4,7 +4,19 @@ version = "0.1.0"
 description = "Multi-Agent Healthcare Intelligence System for Personalized and Preventive Medicine"
 requires-python = ">=3.12"
 dependencies = [
-    "anthropic",
+    "anthropic>=0.84.0",
+    "myvariant",
+    "biopython",
+    "gseapy",
+    "dgipy",
+    "semanticscholar",
+    "pydantic>=2.0",
+    "pandas",
+    "pyarrow",
+    "streamlit",
+    "plotly",
+    "requests",
+    "httpx",
 ]
 
 [dependency-groups]
