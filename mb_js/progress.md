@@ -8,12 +8,14 @@
 - [x] `eval/judge.py` — LLM-as-judge (relevance, completeness, accuracy, safety)
 - [x] `eval/ralph.py` — Ralph Loop v1 (find weakest → rewrite prompt)
 - [x] `scripts/evaluate.py` — CLI runner (--mock, --save, --ralph --iter N)
+- [x] `data/eval/case_inputs.json` — real DNA sequences + Pima clinical features
+- [x] Baseline eval run — 12/12 deterministic pass, judge scores saved
+- [x] `prompts/genomics.txt` — extracted from hardcoded agent (Ralph Loop ready)
+- [x] `app/dashboard.py` — Streamlit eval dashboard (Overview, Case Details, LLM-as-Judge tabs)
 
-#### Design decisions
-- Focus on 2-agent demo (Genomics + Doctor) first, scalable for new agents
-- Ralph Loop v1: simple iterative loop — eval → find weakest → update prompt. Improve iteration process later
-- Support both real mode (Claude API) and mock mode (pre-recorded outputs)
-- **TODO**: decide test case inputs (DNA sequences, clinical features) — deferred
+### Waiting on YH
+- [ ] Re-run full eval after YH merges agent updates (genomics, doctor, health trainer)
+- [ ] Run Ralph Loop to improve prompts based on judge feedback
 
 ## Hold
 
