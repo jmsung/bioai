@@ -21,6 +21,10 @@ data/transcriptomics/*
 data/medications/*
 !data/medications/README.md
 !data/medications/raw/
+!data/metabolomics/
+data/metabolomics/*
+!data/metabolomics/README.md
+!data/metabolomics/raw/
 __pycache__/
 *.py[cod]
 *.egg-info/
