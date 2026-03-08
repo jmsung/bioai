@@ -27,6 +27,15 @@ Patient
    │                    Insulin therapy        Metformin / GLP-1
    │                    (Type 1 drugs)         (Type 2 drugs)
    │
+   ├─── (HEALTH_TRAINER) ──▶ [Health Trainer Agent]
+   │                              │
+   │                    classify_workout_type (ADA 2023 rules)
+   │                    + diabetes context from Genomics & Doctor
+   │                              │
+   │                    recommend_exercises (50-exercise DB)
+   │                              │
+   │                    → Personalised weekly plan
+   │
    └─── (Background) ──▶ [Transcriptomics, Proteomics, Pharma, Clinical, Literature]
                                           │
                                     Synthesis (Claude Opus)
@@ -52,6 +61,7 @@ Patient Case → Orchestrator → [6 Agents in Parallel] → Blackboard → Synt
 |-------|-------|---------|--------------------------|
 | **Genomics** | `classify_dna` | Pre-trained 2-layer CNN (3-mer tokenization) | Genetic predisposition: DMT1/DMT2/NONDM |
 | **Doctor** | `classify_diabetes` | Pre-trained MLP (8 clinical features) | Conversational intake → hospital/health trainer routing |
+| **Health Trainer** | `classify_workout_type`, `recommend_exercises` | ADA 2023 clinical rules + 50-exercise DB | Exercise prescription for HEALTH_TRAINER referrals |
 | **Transcriptomics** | `run_gsea`, `classify_subtype` | GSEApy | Gene expression signals for progression |
 | **Proteomics** | `lookup_protein`, `get_protein_interactions` | UniProt REST, STRING DB | Biomarker inference |
 | **Pharmacology** | `search_drug_gene_interactions`, `search_adverse_effects` | DGIpy, OpenFDA | DNA-matched drug recommendations |
@@ -144,7 +154,10 @@ Checks whether the combined agent outputs produce the correct final decision per
 | Quality | Completeness (1-5) | LLM-as-judge | >3.5 |
 | Quality | Accuracy (1-5) | LLM-as-judge | >3.5 |
 | Safety | Harmful recommendation | LLM-as-judge | 0 |
+| Safety | Clinical constraint violations | Synthetic diabetes overlay on gym data | 0 |
 | Decision | Combined decision correctness | vs decision matrix | 100% |
+| Health Trainer | Experience level accuracy | vs gym members ground truth | Track (48.2%) |
+| Health Trainer | Workout type baseline | vs gym members (NONDM) | Track (19.7%) |
 | System | Latency per agent | time.time() | <30s |
 | System | Cost per run | API usage field | Track |
 

@@ -6,6 +6,8 @@
 |-----------|---------|----------|-----|
 | Genomics | DNA Classification (Diabetes) | `data/dna_classification/` | CNN-based diabetes DNA classification (DMT1/DMT2/NONDM) |
 | Clinical | Pima Indians Diabetes (Kaggle) | `data/diabetes/` | MLP clinical diabetes prediction (8 features) |
+| Exercise | Best 50 Exercises (Kaggle) | `data/exercises/` | Exercise recommendation lookup |
+| Fitness | Gym Members Exercise Dataset (Kaggle) | `data/gym_members/` | Health trainer evaluation + future ML |
 | Genomics | ClinVar `variant_summary.txt` (~50MB) | `data/clinvar/` | Variant → disease lookup |
 | Genomics + Transcriptomics | METABRIC from Kaggle (~50MB) | `data/metabric/` | Mutations + mRNA z-scores + clinical |
 | Pharmacology | PharmGKB clinical annotations | `data/pharmgkb/` | Drug-gene associations |
@@ -35,6 +37,31 @@ Original source: National Institute of Diabetes and Digestive and Kidney Disease
 
 Features: Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age
 
+### Best 50 Exercises Dataset (`data/exercises/`)
+
+Source: [Kaggle — prajwaldongre/best-50-exercise-for-your-body](https://www.kaggle.com/datasets/prajwaldongre/best-50-exercise-for-your-body)
+
+| File | Description |
+|------|-------------|
+| `raw/exercises.csv` | 50 exercises with Name, Type, BodyPart, Equipment, Level, Description, Benefits, CaloriesPerMinute |
+
+Types: Strength, Cardio, Flexibility, Plyometric
+Body parts: Chest, Back, Shoulders, Arms, Core, Legs, Full Body
+Equipment: Bodyweight, Dumbbell, Barbell, Machine
+Levels: Beginner, Intermediate
+
+### Gym Members Exercise Dataset (`data/gym_members/`)
+
+Source: [Kaggle — valakhorasani/gym-members-exercise-dataset](https://www.kaggle.com/datasets/valakhorasani/gym-members-exercise-dataset) (Apache 2.0)
+
+| File | Description |
+|------|-------------|
+| `raw/gym_members.csv` | 973 gym members with demographics, exercise habits, and workout type |
+
+Key columns: Age, Gender, Weight (kg), Height (m), BMI, Workout_Type (Cardio/Strength/Yoga/HIIT), Experience_Level (1/2/3), Workout_Frequency (days/week), Session_Duration (hours)
+
+Used for: 3-layer health trainer evaluation (`scripts/evaluate_health_trainer.py`) — experience level accuracy, workout type baseline, clinical constraint verification. Future: demographic ML model to improve workout type scoring.
+
 ## Patient Cases
 
 ### Diabetes Precision Medicine Cases
@@ -43,10 +70,12 @@ Features: Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, Diab
 - **Case 2 — DNA Override (early intervention)**: Clinical negative + DMT2 DNA → hospital despite clean labs
 - **Case 3 — Clinical Override (avoid unnecessary treatment)**: Clinical positive + NONDM DNA → reconsider drugs, health trainer first
 - **Case 4 — Type 1 vs Type 2 drug differentiation**: Two similar clinical profiles, DMT1 vs DMT2 DNA → completely different drug plans
+- **Case 5 — Health trainer referral**: DMT2 DNA (72% confidence) + Non-Diabetic clinical (44% probability, moderate risk) → HEALTH_TRAINER → classify_workout_type (Strength, Beginner) → personalised exercise plan with clinical reasoning
 
 ## Format
 
 - All data as pandas DataFrames, cached as Parquet in `data/`
 - Files organized per data source (e.g., ClinVar, METABRIC, PharmGKB)
-- `data/` is gitignored — only `.gitkeep` is tracked
+- `data/` is gitignored by default, with exceptions for tracked datasets: `data/diabetes/`, `data/exercises/` (raw + README tracked; models gitignored for exercises)
+- `data/gym_members/` is NOT tracked — download via `kaggle datasets download -d valakhorasani/gym-members-exercise-dataset`
 - Each tool function: query in (gene, variant, drug) → dict out

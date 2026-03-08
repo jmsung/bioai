@@ -10,6 +10,9 @@ data/diabetes/*
 data/exercises/*
 !data/exercises/README.md
 !data/exercises/raw/
+!data/gym_members/
+data/gym_members/*
+!data/gym_members/README.md
 __pycache__/
 *.py[cod]
 *.egg-info/
