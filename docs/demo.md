@@ -1,123 +1,140 @@
-# Demo Plan
+# Demo Plan — 3-Minute Hackathon Presentation
 
-## The Story (2 minutes)
-
-The demo tells a concrete story that most people immediately understand:
+## The Story
 
 > *"Your doctor says you have diabetes. Should you trust that? What if your DNA says otherwise?"*
 
-We show two patients with the same clinical reading — and completely different genetic realities — getting two different, correct recommendations.
+We show patients with identical clinical readings but different genetic realities — getting different, correct recommendations. Then we show how the system improves itself automatically.
 
 ---
 
-## Presentation Flow
+## Presentation Flow (3 minutes)
 
-1. **(15s) Problem** — Doctors diagnose diabetes from blood tests alone. But two patients with identical glucose and BMI can have completely different futures. DNA changes everything.
+### Act 1: The Problem (20s)
 
-2. **(60s) Live Demo** — Two patients, same clinical numbers, different DNA:
-   - Patient A: Clinical positive + DMT2 DNA + active pathways → confirmed → pharmacology → Type 2 drugs
-   - Patient B: Clinical positive + NONDM DNA → genetic override → health trainer, avoid unnecessary drugs
-   - Patient C: Clinical positive + DMT2 DNA + NO pathway activation → false positive → health trainer (3-layer validation catches it)
+Doctors diagnose diabetes from blood tests alone. But two patients with identical glucose and BMI can have completely different futures. DNA + molecular evidence changes everything.
 
-3. **(30s) The Drug Decision** — Patient A's DNA says DMT2, transcriptomics confirms with beta cell stress pathway. Pharmacology agent recommends metformin/GLP-1, not insulin.
+### Act 2: Live E2E Pipeline (90s)
 
-4. **(15s) Architecture** — Three validation layers. Genomics + Doctor + Transcriptomics working together.
+Run `scripts/run.py --case 1` live. Show a patient flowing through 3 validation layers:
+
+**Patient A — Confirmed Diabetic (case-1)**
+```
+DNA (Genomics) → DMT2 detected (85% confidence)
+Clinical (Doctor) → Diabetic (glucose=189, BMI=30.1)
+Molecular (Transcriptomics) → 5/5 pathways active, confirmed
+→ Decision: HOSPITAL → Pharmacology → metformin + GLP-1
+```
+
+**Patient B — DNA Override (case-2)**
+```
+DNA (Genomics) → DMT2 detected
+Clinical (Doctor) → Non-Diabetic (clean labs)
+Molecular (Transcriptomics) → Early pathway activation, confirmed
+→ Decision: HOSPITAL → catch it early, before symptoms
+```
+
+**Patient C — No Genetic Risk (case-3)**
+```
+DNA (Genomics) → NONDM (no genetic risk)
+Clinical (Doctor) → Diabetic (looks diabetic on paper)
+→ Decision: RECONSIDER → avoid unnecessary drugs, lifestyle first
+```
+
+Key message: Same clinical numbers, different DNA → different treatment. The 3rd layer (transcriptomics) catches false positives.
+
+### Act 3: Self-Improving System — Ralph Loop (30s)
+
+> "What if an agent gives a bad answer? We don't rewrite code — we run Ralph Loop."
+
+Show before/after:
+- Ralph identifies weakest agent + metric from eval scores
+- Automatically rewrites the agent's prompt
+- Re-evaluates — scores improve
+- If scores regress, it rolls back automatically
+
+```bash
+uv run python scripts/evaluate.py --mock       # 15/15 metrics pass
+uv run python scripts/evaluate.py --ralph --iter 3  # auto-improve
+```
+
+### Act 4: Architecture (20s)
+
+Show the 3-layer validation diagram:
+```
+Layer 1: DNA (Genomics CNN) ──────────────────┐
+Layer 2: Clinical (Doctor + Pima classifier) ──┼── Decision Matrix
+Layer 3: Molecular (Transcriptomics 5-pathway)─┘
+    ├── Hospital → Pharmacology (ADA drug matching)
+    └── Healthy → Health Trainer (exercise plan)
+```
+
+8 specialized agents, Claude as reasoning backbone, deterministic tools for accuracy.
 
 ---
 
-## Dashboard (Streamlit)
+## Demo Cases
 
-| Tab | Content |
-|-----|---------|
-| **Patient Intake** | Chat interface → Doctor Agent gathers clinical info conversationally |
-| **DNA Analysis** | Genomics Agent result card — DMT1/DMT2/NONDM with confidence |
-| **Decision** | Combined recommendation — hospital vs health trainer, with reasoning |
-| **Drug Plan** | Pharmacology Agent — DNA-matched drug recommendations |
-| **Evaluation** | Test case × agent score heatmap, latency/cost |
-
----
-
-## Demo Patient Cases
-
-### Case 1 — Confirmed Diabetic (Clinical + DNA agree)
-- Clinical: glucose=160, BMI=31, age=42, pregnant×2, mother has diabetes
+### Case 1 — Confirmed Diabetic
+- Clinical: glucose=189, BMI=30.1, age=59
 - DNA: DMT2 (high confidence)
-- Decision: → **Hospital** (confirmed Type 2) → Metformin / GLP-1 agonists
+- Transcriptomics: 5/5 pathways active (inflammation, insulin resistance dominant)
+- → **Hospital** → Pharmacology → metformin
 
 ### Case 2 — DNA Override: Early Intervention
-- Clinical: glucose=95, BMI=24 (looks healthy)
+- Clinical: glucose=89, BMI=28.1, age=21 (looks healthy)
 - DNA: DMT2 (high confidence)
-- Decision: → **Hospital** (genetic risk overrides clean labs — catch it early)
+- Transcriptomics: mild pathway activation (early molecular signs)
+- → **Hospital** (genetic risk overrides clean labs)
 
 ### Case 3 — Clinical Override: Avoid Unnecessary Treatment
-- Clinical: glucose=148, BMI=33 (looks diabetic)
+- Clinical: glucose=189 (looks diabetic)
 - DNA: NONDM (no genetic predisposition)
-- Decision: → **Health Trainer** (clinical positive, but not genetically predisposed — lifestyle first)
+- → **Reconsider** (lifestyle first, avoid drugs)
 
-### Case 4 — Hospital Molecular Tests (4-Layer Validation)
-- Clinical: glucose=155, BMI=30 (looks diabetic)
-- DNA: DMT2 (high confidence)
-- Genomics + Doctor → **Hospital** (confirmed)
-- Hospital Agent: explains blood tests needed, patient consents
-- Transcriptomics: inflammation + insulin resistance pathways active → **CONFIRMED**
-- Metabolomics: elevated BCAAs, glucose, lipids → insulin resistance score 0.82 → **CONFIRMED**
-- Combined: both confirm → high confidence → **Pharmacology**
+### Case 4 — Healthy Prevention
+- Clinical: glucose=89 (normal), DNA: NONDM
+- → **Health Trainer** (exercise plan)
 
-### Case 5 — Hospital False Positive Filter (4-Layer Catches It)
-- Clinical: glucose=155, BMI=30 (looks diabetic)
-- DNA: DMT2 (high confidence)
-- Genomics + Doctor → **Hospital** (confirmed)
-- Hospital Agent: explains blood tests needed, patient consents
-- Transcriptomics: **no pathway activation** (all z-scores near 0)
-- Metabolomics: **normal metabolic profile** (IR score ~0.5)
-- Combined: neither confirms → false positive → **Health Trainer** (no unnecessary drugs)
+### Case 5 — Hospital 4-Layer Validation (stretch)
+- Genomics + Doctor → **Hospital**
+- Hospital Agent: explains blood tests, patient consents
+- Transcriptomics + Metabolomics both confirm → **Pharmacology**
 
-### Case 5 — Type 1 vs Type 2 Drug Differentiation
-- Two patients, same clinical profile
-- Patient X: DMT1 DNA → **Insulin therapy**
-- Patient Y: DMT2 DNA → **Metformin + GLP-1**
+### Case 6 — Hospital False Positive Filter (stretch)
+- Genomics + Doctor → **Hospital**
+- Transcriptomics: no pathway activation, Metabolomics: normal
+- Combined: neither confirms → **Health Trainer** (avoid unnecessary drugs)
 
 ---
 
 ## Priority Tiers
 
-### P0 — MVP
-- [x] `models.py` — shared Pydantic contracts
-- [x] Genomics Agent — DNA classification (DMT1/DMT2/NONDM)
-- [x] Doctor Agent — conversational intake → classify_diabetes → recommendation
-- [x] Health Trainer Agent — exercise prescription with clinical rules (ADA 2023)
-- [ ] `scripts/run.py` — CLI to run the full pipeline on a case
-- [ ] Streamlit: Patient Intake + DNA Analysis + Decision tabs
+### P0 — Demo Critical
+- [x] 5 working agents: Genomics, Doctor, Transcriptomics, Pharmacology, Health Trainer
+- [x] Eval pipeline: 15/15 mock metrics, 165 tests
+- [x] Ralph Loop v2: failure context, rollback, history
+- [x] Transcriptomics as 3rd validation layer in eval
+- [ ] `scripts/run.py --case N` — E2E pipeline CLI (the demo entry point)
 
-### P1 — Should Have
-- [x] Pharmacology Agent — DNA-matched drug recommendations
-- [x] Evaluation framework with LLM-as-judge (13/13 pass, 3 agents evaluated)
-- [x] Ralph Loop (3 iterations — improved health_trainer + doctor prompts)
-- [ ] Case 3 (clinical override) fully demonstrated in dashboard
-
-### P2 — Nice to Have
-- [x] Transcriptomics Agent — pathway activity, confirms/rejects diabetes
-- [ ] Proteomics Agent — functional biomarkers (inflammatory/signaling proteins, kidney/CV injury) — YH in progress
-- [x] Metabolomics Agent — current metabolic state (insulin resistance, lipid/BCAA patterns)
-- [x] Hospital Agent — coordinates molecular tests (consent → transcriptomics + metabolomics → combined decision)
-- [ ] Remaining agents (Literature, Clinical Guidelines)
-- [ ] Streamlit Ralph Loop tab
-- [x] All 4 demo cases pre-cached (mock outputs saved)
+### P1 — Nice to Have
+- [ ] Streamlit dashboard: visual pipeline flow for presentation
+- [x] Metabolomics Agent — metabolic state (YH landed)
+- [x] Hospital Agent — coordinates molecular tests (YH landed)
+- [ ] Proteomics Agent — protein biomarkers (YH in progress)
 
 ### Explicitly Skip
-- GPU-requiring models (ESM-2, DNABERT-2, AlphaFold)
-- FHIR data formatting
-- Synthea patient generation
-- Database/persistent storage
-- Auth/user management
+- GPU models (ESM-2, DNABERT-2, AlphaFold)
+- FHIR, Synthea, database, auth
+- Latency/cost tracking
 
 ---
 
 ## Verification Commands
 
 ```bash
-uv run python scripts/run.py --case 1              # full two-agent pipeline
-uv run python scripts/evaluate.py                   # eval suite
-uv run python scripts/evaluate.py --ralph --iter 3  # Ralph Loop
-uv run streamlit run app/dashboard.py               # dashboard
+uv run python scripts/run.py --case 1              # E2E pipeline (demo entry point)
+uv run python scripts/evaluate.py --mock            # mock eval (15/15 pass)
+uv run python scripts/evaluate.py --ralph --iter 3  # Ralph Loop auto-improvement
+uv run pytest --tb=short -q                         # full test suite (165 pass)
 ```
