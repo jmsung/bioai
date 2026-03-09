@@ -21,6 +21,7 @@ dependencies = [
     "numpy",
     "scikit-learn",
     "imbalanced-learn",
+    "python-dotenv>=1.2.2",
 ]
 
 [dependency-groups]
