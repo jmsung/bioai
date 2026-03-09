@@ -40,7 +40,7 @@ Patient
 | **Pharmacology** | Subtype-informed drug recommendations | ADA guideline DB (16 drugs × 8 classes) | Implemented |
 | **Hospital** | Coordinates molecular tests (consent → TX + metab) | Transcriptomics + Metabolomics combined | Implemented |
 | **Metabolomics** | Metabolic state (insulin resistance, lipids, BCAAs) | ST001906 z-score (78 metabolites, 5 pathways) | Implemented |
-| **Proteomics** | Functional biomarkers (inflammatory, kidney/CV) | TBD | In progress (YH) |
+| **Proteomics** | Functional biomarkers (inflammatory, kidney/CV) | Scaffold + integration pipeline | In progress |
 | Clinical | Medical guidelines | JSON knowledge base | Stub |
 | Literature | Publications | PubMed, Semantic Scholar | Stub |
 

@@ -124,7 +124,7 @@ Genomics       Transcriptomics       Proteomics       Metabolomics
 | **Health Trainer** | `classify_workout_type`, `recommend_exercises` | ADA 2023 clinical rules + 50-exercise DB | Exercise prescription for HEALTH_TRAINER referrals |
 | **Hospital** | `run_hospital_tests` | Coordinates transcriptomics + metabolomics, combines confirmation | Patient consent → blood tests → combined molecular decision |
 | **Transcriptomics** | `analyze_gene_expression` | GSE26168 reference + z-score pathway scoring (110 genes, 5 pathways) | 3rd validation layer: confirms/rejects diabetes, subtype, complication risks |
-| **Proteomics** | `analyze_protein_biomarkers` | TBD (YH in progress) | Functional biomarkers: inflammatory/signaling proteins, kidney/CV injury markers |
+| **Proteomics** | `analyze_protein_biomarkers` | Scaffold + integration pipeline | Functional biomarkers: inflammatory/signaling proteins, kidney/CV injury markers |
 | **Metabolomics** | `analyze_metabolic_profile` | ST001906 reference + z-score pathway scoring (78 metabolites, 5 pathways) | Current metabolic state: insulin resistance, lipid dysregulation, BCAA patterns |
 | **Pharmacology** | `recommend_medications` | ADA guideline DB (16 drugs × 8 classes) + scoring engine | Subtype-informed medication selection with complication-aware ranking |
 | **Clinical** | `lookup_guidelines`, `check_screening_criteria` | JSON knowledge base | Evidence-based guideline interpretation (stub) |
@@ -302,7 +302,7 @@ All tools: **on-device or free API calls** -- no GPU, no paid APIs beyond Claude
 | LLM-as-judge | `claude-sonnet-4-20250514` | Cost-efficient scoring |
 | Ralph Loop | `claude-opus-4-20250514` | Needs strong reasoning |
 
-Cost: ~$0.15/run. Budget: ~$5-10 for hackathon.
+Cost: ~$0.15/run per test case. Full evaluation run: ~$5-10 (4 cases × agents + Ralph Loop iterations).
 
 ## Project Structure
 

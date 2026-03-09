@@ -9,7 +9,7 @@ precision-health-agents/
 ├── src/precision_health_agents/           # Shared package (agents, tools, eval, orchestrator)
 ├── scripts/             # Entry points (run.py, evaluate.py, process_transcriptomics.py, process_metabolomics.py)
 ├── app/                 # Streamlit eval dashboard
-├── tests/               # Tests (mirror src/ structure, 196 tests)
+├── tests/               # Tests (mirror src/ structure, 200 tests)
 ├── docs/                # Knowledge DB (architecture, vision, data, demo)
 ├── data/                # Datasets (gitignored)
 ├── mb_<dev>/            # Per-developer memory banks (gitignored)
@@ -53,7 +53,7 @@ precision-health-agents/
 
 ```bash
 uv sync                                      # Install dependencies
-uv run pytest                                # Run tests (196 tests)
+uv run pytest                                # Run tests (200 tests)
 uv run python scripts/run.py --case 1        # Run pipeline on a case
 uv run python scripts/evaluate.py            # Real eval (agents + judge via API)
 uv run python scripts/evaluate.py --mock     # Mock eval (pre-recorded outputs)
