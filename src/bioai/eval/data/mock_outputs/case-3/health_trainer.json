@@ -1,0 +1,33 @@
+{
+  "agent": "health_trainer",
+  "status": "success",
+  "findings": {
+    "fitness_level": "beginner",
+    "goals": ["manage blood glucose through lifestyle", "improve insulin sensitivity"],
+    "recommended_exercises": [
+      {
+        "Name": "Walking",
+        "Type": "Cardio",
+        "BodyPart": "Full Body",
+        "Equipment": "Bodyweight",
+        "Level": "Beginner",
+        "Description": "Brisk walking at moderate intensity for sustained periods",
+        "Benefits": "Improves cardiovascular health and insulin sensitivity with low injury risk",
+        "CaloriesPerMinute": 5
+      },
+      {
+        "Name": "Bodyweight Squats",
+        "Type": "Strength",
+        "BodyPart": "Legs",
+        "Equipment": "Bodyweight",
+        "Level": "Beginner",
+        "Description": "Stand with feet shoulder-width apart, lower hips back and down",
+        "Benefits": "Builds lower body strength, improves glucose uptake in muscles",
+        "CaloriesPerMinute": 6
+      }
+    ],
+    "weekly_plan": "3 days/week: 30 min brisk walking + 15 min bodyweight exercises. Focus on consistency over intensity. Clinical markers suggest lifestyle intervention over medication."
+  },
+  "summary": "Lifestyle intervention plan for clinical-positive but genetically low-risk patient. Focus on walking and bodyweight exercises to manage glucose through activity rather than medication.",
+  "error": null
+}
