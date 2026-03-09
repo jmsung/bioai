@@ -10,6 +10,8 @@ from bioai.models import (
     HealthTrainerFindings,
     Recommendation,
     RiskLevel,
+    TranscriptomicsFindings,
+    TranscriptomicsRecommendation,
 )
 
 
@@ -61,11 +63,37 @@ def _health_trainer_result(fitness_level: str = "beginner") -> AgentResult:
     )
 
 
+def _transcriptomics_result(confirmed: bool = True) -> AgentResult:
+    return AgentResult(
+        agent="transcriptomics",
+        status=AgentStatus.SUCCESS,
+        findings=TranscriptomicsFindings(
+            pathway_scores={"inflammation_immune": 2.1, "insulin_resistance": 1.8},
+            dominant_pathway="inflammation_immune",
+            active_pathways=["inflammation_immune", "insulin_resistance"],
+            risk_level=RiskLevel.HIGH if confirmed else RiskLevel.LOW,
+            dysregulated_genes=[{"gene": "TNF", "z_score": 2.8}],
+            diabetes_confirmed={
+                "confirmed": confirmed,
+                "confidence": 0.92 if confirmed else 0.3,
+                "evidence": "test",
+            },
+            diabetes_subtype={"primary": "Type 2", "evidence": "test"},
+            complication_risks=[],
+            monitoring={"priority_genes": ["TNF"], "recheck_interval": "3 months"},
+            recommendation=TranscriptomicsRecommendation.PHARMACOLOGY,
+            interpretation="Test interpretation.",
+        ),
+        summary="Test transcriptomics result.",
+    )
+
+
 def _case(
     dna_class: str = "DMT2",
     clinical_prediction: str = "Diabetic",
     decision: str = "hospital",
     fitness_level: str | None = None,
+    transcriptomics_confirmed: bool | None = None,
 ) -> EvalCase:
     return EvalCase(
         id="test",
@@ -76,6 +104,7 @@ def _case(
             clinical_prediction=clinical_prediction,
             decision=decision,
             fitness_level=fitness_level,
+            transcriptomics_confirmed=transcriptomics_confirmed,
         ),
     )
 
@@ -185,6 +214,52 @@ class TestDecisionCorrectness:
             _genomics_result("DMT2"),
             _doctor_result("Diabetic"),
             _case(decision="health_trainer"),
+        )
+        assert result.score == 0.0
+        assert not result.passed
+
+    def test_decision_with_transcriptomics_override(self):
+        """TX confirmed=False overrides hospital → reconsider (false positive filter)."""
+        result = score_decision(
+            _genomics_result("DMT2"),
+            _doctor_result("Diabetic"),
+            _case(decision="reconsider"),
+            transcriptomics=_transcriptomics_result(confirmed=False),
+        )
+        assert result.score == 1.0
+        assert result.passed
+        assert "TX override" in result.detail
+
+    def test_decision_without_transcriptomics(self):
+        """Backward compatible — no TX result, 2-layer matrix still works."""
+        result = score_decision(
+            _genomics_result("DMT2"),
+            _doctor_result("Diabetic"),
+            _case(decision="hospital"),
+            transcriptomics=None,
+        )
+        assert result.score == 1.0
+        assert result.passed
+
+
+# -- Layer 1: Transcriptomics tool accuracy ---------------------------------
+
+
+class TestTranscriptomicsAccuracy:
+    def test_transcriptomics_correct(self):
+        """confirmed=True matches expected=True."""
+        result = score_tool_accuracy(
+            _transcriptomics_result(confirmed=True),
+            _case(transcriptomics_confirmed=True),
+        )
+        assert result.score == 1.0
+        assert result.passed
+
+    def test_transcriptomics_wrong(self):
+        """confirmed=True but expected=False."""
+        result = score_tool_accuracy(
+            _transcriptomics_result(confirmed=True),
+            _case(transcriptomics_confirmed=False),
         )
         assert result.score == 0.0
         assert not result.passed

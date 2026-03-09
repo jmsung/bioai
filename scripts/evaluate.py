@@ -16,7 +16,7 @@ from bioai.config import Settings
 from bioai.eval.cases import EvalCase, load_cases
 from bioai.eval.judge import JudgeScore, judge_agent
 from bioai.eval.metrics import MetricResult, score_decision, score_tool_accuracy
-from bioai.eval.ralph import ralph_iterate
+from bioai.eval.ralph import FailureExample, RalphResult, ralph_iterate
 from bioai.models import AgentResult
 
 MOCK_DIR = Path("src/bioai/eval/data/mock_outputs")
@@ -78,6 +78,31 @@ async def run_health_trainer(
     return agent.result(summary="Evaluation run")
 
 
+async def run_transcriptomics(
+    case: EvalCase,
+    settings: Settings,
+    genomics_result: AgentResult | None,
+    doctor_result: AgentResult | None,
+) -> AgentResult:
+    """Run Transcriptomics agent on a test case (only for hospital-path cases with gene data)."""
+    from bioai.agents.transcriptomics import TranscriptomicsAgent
+
+    # Build context from prior agent results
+    context: dict = {}
+    if genomics_result:
+        context["genomics"] = genomics_result.model_dump()
+    if doctor_result:
+        context["doctor"] = doctor_result.model_dump()
+
+    agent = TranscriptomicsAgent(settings=settings)
+    # Format gene expression as query
+    gene_data = case.gene_expression or {}
+    query = "Gene expression profile:\n" + "\n".join(
+        f"  {gene}: {val}" for gene, val in gene_data.items()
+    )
+    return await agent.analyze(query, context=context or None)
+
+
 # -- Mock I/O ----------------------------------------------------------------
 
 
@@ -120,6 +145,16 @@ async def evaluate_case(
         genomics_result = await run_genomics(case, settings)
         doctor_result = await run_doctor(case, settings)
 
+    # Transcriptomics (only for hospital-path cases with gene expression data)
+    transcriptomics_result = None
+    if case.gene_expression:
+        if mock:
+            transcriptomics_result = outputs.get("transcriptomics")  # type: ignore[possibly-undefined]
+        else:
+            transcriptomics_result = await run_transcriptomics(
+                case, settings, genomics_result, doctor_result
+            )
+
     # Health trainer (only for health_trainer decision cases)
     health_trainer_result = None
     if case.expected.decision == "health_trainer":
@@ -136,6 +171,8 @@ async def evaluate_case(
             results_dict["genomics"] = genomics_result
         if doctor_result:
             results_dict["doctor"] = doctor_result
+        if transcriptomics_result:
+            results_dict["transcriptomics"] = transcriptomics_result
         if health_trainer_result:
             results_dict["health_trainer"] = health_trainer_result
         save_outputs(case, results_dict, MOCK_DIR)
@@ -146,17 +183,26 @@ async def evaluate_case(
         metrics.append(score_tool_accuracy(genomics_result, case))
     if doctor_result:
         metrics.append(score_tool_accuracy(doctor_result, case))
+    if transcriptomics_result:
+        metrics.append(score_tool_accuracy(transcriptomics_result, case))
     if health_trainer_result:
         metrics.append(score_tool_accuracy(health_trainer_result, case))
 
-    # Layer 3: Decision correctness
+    # Layer 3: Decision correctness (with optional TX override)
     if genomics_result and doctor_result:
-        metrics.append(score_decision(genomics_result, doctor_result, case))
+        metrics.append(
+            score_decision(
+                genomics_result, doctor_result, case,
+                transcriptomics=transcriptomics_result,
+            )
+        )
 
     # Layer 2: LLM-as-judge (skip in mock unless judge is also mocked)
     judge_scores: dict[str, JudgeScore] = {}
     if not mock:
-        for agent_result in [genomics_result, doctor_result, health_trainer_result]:
+        for agent_result in [
+            genomics_result, doctor_result, transcriptomics_result, health_trainer_result,
+        ]:
             if agent_result:
                 judge_scores[agent_result.agent] = await judge_agent(
                     agent_result, case, settings
@@ -243,17 +289,38 @@ async def main():
 
     print_report(results)
 
-    # Ralph Loop
+    # Ralph Loop (v2: failure context + rollback)
     if args.ralph:
         avg_scores = collect_judge_averages(results)
         if not avg_scores:
             print("\nNo judge scores available for Ralph Loop. Run without --mock.")
             return
 
-        print(f"\nStarting Ralph Loop ({args.iter} iterations)...")
+        print(f"\nStarting Ralph Loop v2 ({args.iter} iterations)...")
+        history: list[RalphResult] = []
+
         for i in range(args.iter):
             print(f"\n--- Ralph iteration {i + 1} ---")
-            ralph_result = await ralph_iterate(avg_scores, settings=settings)
+
+            # Collect failure examples from judge scores
+            failures: list[FailureExample] = []
+            for result in results:
+                for agent, js in result.get("judge_scores", {}).items():
+                    if min(js.relevance, js.completeness, js.accuracy, js.safety) < 3.0:
+                        failures.append(
+                            FailureExample(
+                                case_id=result["case"],
+                                agent_output=f"{agent} summary",
+                                judge_explanation=js.explanation,
+                            )
+                        )
+
+            ralph_result = await ralph_iterate(
+                avg_scores,
+                settings=settings,
+                failure_context=failures or None,
+                history=history or None,
+            )
             print(
                 f"  Target: {ralph_result.agent}/{ralph_result.metric} "
                 f"(score: {ralph_result.old_score:.1f})"
@@ -263,12 +330,34 @@ async def main():
 
             if ralph_result.prompt_changed:
                 # Re-run eval to get new scores
+                old_avg = avg_scores.copy()
                 results = []
                 for case in cases:
                     result = await evaluate_case(case, settings)
                     results.append(result)
                 print_report(results)
                 avg_scores = collect_judge_averages(results)
+
+                # Check for regression — rollback if worse
+                new_agent_scores = avg_scores.get(ralph_result.agent, {})
+                old_agent_scores = old_avg.get(ralph_result.agent, {})
+                new_target = new_agent_scores.get(ralph_result.metric, 0.0)
+                old_target = old_agent_scores.get(ralph_result.metric, 0.0)
+                ralph_result.new_score = new_target
+
+                if new_target < old_target and ralph_result.backup_path:
+                    backup = Path(ralph_result.backup_path)
+                    if backup.exists():
+                        prompt_file = backup.with_suffix("")  # remove .bak
+                        prompt_file.write_text(backup.read_text())
+                        backup.unlink()
+                        print(
+                            f"  ROLLBACK: {ralph_result.metric} regressed "
+                            f"({old_target:.1f} → {new_target:.1f}), restored prompt"
+                        )
+                        avg_scores = old_avg  # revert scores
+
+            history.append(ralph_result)
 
 
 if __name__ == "__main__":

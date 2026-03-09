@@ -1,0 +1,49 @@
+{
+  "agent": "transcriptomics",
+  "status": "success",
+  "findings": {
+    "pathway_scores": {
+      "inflammation_immune": 2.1,
+      "insulin_resistance": 1.8,
+      "beta_cell_stress": 1.5,
+      "fibrosis_ecm": 1.3,
+      "oxidative_mitochondrial": 1.6
+    },
+    "dominant_pathway": "inflammation_immune",
+    "active_pathways": [
+      "inflammation_immune",
+      "insulin_resistance",
+      "beta_cell_stress",
+      "fibrosis_ecm",
+      "oxidative_mitochondrial"
+    ],
+    "risk_level": "high",
+    "dysregulated_genes": [
+      {"gene": "TNF", "z_score": 2.8, "pathway": "inflammation_immune"},
+      {"gene": "IL6", "z_score": 2.3, "pathway": "inflammation_immune"},
+      {"gene": "INSR", "z_score": -1.9, "pathway": "insulin_resistance"},
+      {"gene": "SOD2", "z_score": 1.7, "pathway": "oxidative_mitochondrial"}
+    ],
+    "diabetes_confirmed": {
+      "confirmed": true,
+      "confidence": 0.92,
+      "evidence": "5/5 pathways active with high inflammatory and insulin resistance signatures"
+    },
+    "diabetes_subtype": {
+      "primary": "Type 2",
+      "evidence": "Insulin resistance dominant with inflammatory amplification"
+    },
+    "complication_risks": [
+      {"complication": "nephropathy", "risk": "high", "evidence": "COL1A1/FN1 fibrosis markers elevated"},
+      {"complication": "neuropathy", "risk": "moderate", "evidence": "oxidative stress markers elevated"}
+    ],
+    "monitoring": {
+      "priority_genes": ["TNF", "IL6", "INSR", "SOD2"],
+      "recheck_interval": "3 months"
+    },
+    "recommendation": "pharmacology",
+    "interpretation": "Strong molecular confirmation of Type 2 diabetes with active inflammatory, insulin resistance, and oxidative stress pathways. Recommend pharmacological intervention."
+  },
+  "summary": "Transcriptomics confirms Type 2 diabetes: 5/5 pathways active, dominant inflammation (TNF z=2.8, IL6 z=2.3). High confidence molecular validation supports hospital pathway.",
+  "error": null
+}

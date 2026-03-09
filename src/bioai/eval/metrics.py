@@ -9,6 +9,7 @@ from bioai.models import (
     DoctorFindings,
     GenomicsFindings,
     HealthTrainerFindings,
+    TranscriptomicsFindings,
 )
 
 
@@ -79,6 +80,18 @@ def score_tool_accuracy(agent_result: AgentResult, case: EvalCase) -> MetricResu
             detail=f"expected={expected}, actual={actual}",
         )
 
+    if isinstance(findings, TranscriptomicsFindings):
+        expected_confirmed = case.expected.transcriptomics_confirmed
+        actual_confirmed = findings.diabetes_confirmed.get("confirmed", False)
+        correct = actual_confirmed == expected_confirmed
+        return MetricResult(
+            metric="tool_accuracy",
+            agent="transcriptomics",
+            score=1.0 if correct else 0.0,
+            passed=correct,
+            detail=f"expected_confirmed={expected_confirmed}, actual_confirmed={actual_confirmed}",
+        )
+
     if isinstance(findings, HealthTrainerFindings):
         expected_level = case.expected.fitness_level
         actual_level = findings.fitness_level
@@ -107,8 +120,13 @@ def score_decision(
     genomics: AgentResult,
     doctor: AgentResult,
     case: EvalCase,
+    transcriptomics: AgentResult | None = None,
 ) -> MetricResult:
-    """Score whether the combined agent outputs produce the correct decision."""
+    """Score whether the combined agent outputs produce the correct decision.
+
+    When transcriptomics is present and diabetes_confirmed is False, overrides
+    hospital → reconsider (false positive filter from 3rd validation layer).
+    """
     if not isinstance(genomics.findings, GenomicsFindings):
         return MetricResult(
             metric="decision",
@@ -130,17 +148,33 @@ def score_decision(
     risk = _dna_risk(genomics.findings.predicted_class)
     prediction = doctor.findings.prediction
     actual_decision = _DECISION_MATRIX.get((risk, prediction))
+
+    # 3rd layer: transcriptomics override — false positive filter
+    tx_override = False
+    if (
+        transcriptomics
+        and isinstance(transcriptomics.findings, TranscriptomicsFindings)
+        and actual_decision == "hospital"
+        and not transcriptomics.findings.diabetes_confirmed.get("confirmed", True)
+    ):
+        actual_decision = "reconsider"
+        tx_override = True
+
     expected_decision = case.expected.decision
     correct = actual_decision == expected_decision
+
+    detail = (
+        f"dna={genomics.findings.predicted_class} "
+        f"clinical={prediction} → {actual_decision} "
+        f"(expected {expected_decision})"
+    )
+    if tx_override:
+        detail += " [TX override: hospital→reconsider]"
 
     return MetricResult(
         metric="decision",
         agent="combined",
         score=1.0 if correct else 0.0,
         passed=correct,
-        detail=(
-            f"dna={genomics.findings.predicted_class} "
-            f"clinical={prediction} → {actual_decision} "
-            f"(expected {expected_decision})"
-        ),
+        detail=detail,
     )

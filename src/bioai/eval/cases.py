@@ -16,6 +16,8 @@ class ExpectedOutput(BaseModel):
     clinical_prediction: Literal["Diabetic", "Non-Diabetic"] | None = None
     decision: Literal["hospital", "reconsider", "health_trainer"]
     drug_class: str | None = None
+    # Transcriptomics ground truth (only for hospital-path cases with gene data)
+    transcriptomics_confirmed: bool | None = None
     # Health trainer ground truth (only for health_trainer decision)
     fitness_level: Literal["beginner", "intermediate", "advanced"] | None = None
     workout_type: str | None = None  # Cardio, Strength, Flexibility, HIIT
@@ -30,6 +32,7 @@ class EvalCase(BaseModel):
     # Inputs
     dna_sequence: str | None = None
     clinical_features: dict[str, float] | None = None
+    gene_expression: dict[str, float] | None = None
     patient_description: str | None = None
     health_trainer_vitals: dict[str, float | int | str] | None = None
     # Ground truth
@@ -48,6 +51,7 @@ def _build_cases() -> list[EvalCase]:
     inputs = _load_inputs()
     dna = inputs["dna_sequences"] if inputs else {}
     clinical = inputs["clinical_features"] if inputs else {}
+    gene_expr = inputs.get("gene_expression", {}) if inputs else {}
     ht_vitals = inputs.get("health_trainer_vitals", {}) if inputs else {}
 
     return [
@@ -56,15 +60,18 @@ def _build_cases() -> list[EvalCase]:
             name="Confirmed Diabetic",
             description=(
                 "Clinical positive + DMT2 DNA → hospital, Type 2 drugs (metformin). "
-                "Both agents agree — strongest signal."
+                "Both agents agree — strongest signal. "
+                "Transcriptomics confirms via inflammatory + insulin resistance pathways."
             ),
             dna_sequence=dna.get("DMT2"),
             clinical_features=clinical.get("diabetic"),
+            gene_expression=gene_expr.get("case-1"),
             expected=ExpectedOutput(
                 dna_class="DMT2",
                 clinical_prediction="Diabetic",
                 decision="hospital",
                 drug_class="metformin",
+                transcriptomics_confirmed=True,
             ),
         ),
         EvalCase(
@@ -72,14 +79,17 @@ def _build_cases() -> list[EvalCase]:
             name="DNA Override — Early Intervention",
             description=(
                 "Clinical negative + DMT2 DNA → hospital despite clean labs. "
-                "DNA overrides clinical — catch it early."
+                "DNA overrides clinical — catch it early. "
+                "Transcriptomics confirms early molecular signs."
             ),
             dna_sequence=dna.get("DMT2"),
             clinical_features=clinical.get("non_diabetic"),
+            gene_expression=gene_expr.get("case-2"),
             expected=ExpectedOutput(
                 dna_class="DMT2",
                 clinical_prediction="Non-Diabetic",
                 decision="hospital",
+                transcriptomics_confirmed=True,
             ),
         ),
         EvalCase(
