@@ -1,4 +1,4 @@
-# BioAI
+# Multi Agent Healthcare Intelligence System for personalized precision medicine
 
 Multi-agent AI system for DNA-precision diabetes care. Specialized agents analyze patient biological data across multiple omics layers — genomics, transcriptomics, proteomics, metabolomics — and synthesize personalized health assessments with multi-omics validation.
 
@@ -85,8 +85,8 @@ uv run pytest --tb=short -q                          # 200 tests
 ## Project Structure
 
 ```
-bioai/
-├── src/bioai/
+precision-health-agents/
+├── src/precision-health-agents/
 │   ├── agents/          # 10 agents (7 implemented, 1 in progress, 2 stubs)
 │   ├── tools/           # Python functions backing agent tools
 │   ├── prompts/         # System prompts (.txt, editable by Ralph Loop)
