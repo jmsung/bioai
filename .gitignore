@@ -23,3 +23,6 @@ build/
 *.lock
 .ruff_cache/
 .pytest_cache/
+
+# Local Claude Code settings (per-user)
+.claude/
