@@ -1,0 +1,17 @@
+{
+  "agent": "genomics",
+  "status": "success",
+  "findings": {
+    "predicted_class": "DMT2",
+    "confidence": 0.8988286852836609,
+    "probabilities": {
+      "DMT1": 0.0996745303273201,
+      "DMT2": 0.8988286852836609,
+      "NONDM": 0.0014968138420954347
+    },
+    "risk_level": "high",
+    "interpretation": "Sequence shows Type 2 Diabetes-associated pattern with 90% confidence."
+  },
+  "summary": "## Clinical Summary\n\n**Predicted Classification:** DMT2 (Type 2 Diabetes-associated pattern)\n**Confidence Level:** High (89.9%)\n\n**Clinical Interpretation:**\nThis DNA sequence shows a strong genetic signature associated with Type 2 diabetes susceptibility. The high confidence level (nearly 90%) indicates robust genetic markers consistent with increased risk for developing Type 2 diabetes.\n\n**Diabetes Risk Assessment:**\n- **Type 2 Diabetes Risk:** Significantly elevated genetic predisposition\n- **Type 1 Diabetes Risk:** Low genetic association (10.0%)\n- **No Diabetes Pattern:** Minimal likelihood (0.1%)\n\n**Clinical Implications:**\nThe genetic profile suggests this patient has inherited variants that increase susceptibility to Type 2 diabetes. This doesn't guarantee diabetes development but indicates the patient would benefit from:\n- Regular glucose monitoring and metabolic screening\n- Lifestyle interventions focusing on diet and exercise\n- Early preventive measures if other risk factors are present\n\nThis genetic predisposition, combined with environmental and lifestyle factors, contributes to overall Type 2 diabetes risk assessment.",
+  "error": null
+}

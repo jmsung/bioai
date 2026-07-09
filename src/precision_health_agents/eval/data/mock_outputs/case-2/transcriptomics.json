@@ -1,0 +1,47 @@
+{
+  "agent": "transcriptomics",
+  "status": "success",
+  "findings": {
+    "pathway_scores": {
+      "inflammation_immune": 1.2,
+      "insulin_resistance": 1.0,
+      "beta_cell_stress": 0.8,
+      "fibrosis_ecm": 0.7,
+      "oxidative_mitochondrial": 0.9
+    },
+    "dominant_pathway": "inflammation_immune",
+    "active_pathways": [
+      "inflammation_immune",
+      "insulin_resistance",
+      "beta_cell_stress",
+      "fibrosis_ecm",
+      "oxidative_mitochondrial"
+    ],
+    "risk_level": "moderate",
+    "dysregulated_genes": [
+      {"gene": "TNF", "z_score": 1.4, "pathway": "inflammation_immune"},
+      {"gene": "IL6", "z_score": 1.1, "pathway": "inflammation_immune"},
+      {"gene": "INSR", "z_score": -1.2, "pathway": "insulin_resistance"}
+    ],
+    "diabetes_confirmed": {
+      "confirmed": true,
+      "confidence": 0.75,
+      "evidence": "5/5 pathways active with mild-to-moderate elevation, early molecular signs"
+    },
+    "diabetes_subtype": {
+      "primary": "Type 2",
+      "evidence": "Early insulin resistance pattern with subclinical inflammation"
+    },
+    "complication_risks": [
+      {"complication": "metabolic_syndrome", "risk": "moderate", "evidence": "Multiple pathways mildly activated"}
+    ],
+    "monitoring": {
+      "priority_genes": ["TNF", "IL6", "INSR"],
+      "recheck_interval": "6 months"
+    },
+    "recommendation": "pharmacology",
+    "interpretation": "Molecular evidence confirms early Type 2 diabetes despite normal clinical presentation. Subclinical pathway activation supports DNA-based hospital referral."
+  },
+  "summary": "Transcriptomics confirms early T2D: 5/5 pathways active at mild-moderate levels. Molecular validation supports early intervention despite negative clinical labs.",
+  "error": null
+}

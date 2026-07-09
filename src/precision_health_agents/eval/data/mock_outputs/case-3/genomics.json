@@ -1,0 +1,17 @@
+{
+  "agent": "genomics",
+  "status": "success",
+  "findings": {
+    "predicted_class": "NONDM",
+    "confidence": 0.951948344707489,
+    "probabilities": {
+      "DMT1": 0.00586394127458334,
+      "DMT2": 0.042187679558992386,
+      "NONDM": 0.951948344707489
+    },
+    "risk_level": "low",
+    "interpretation": "No diabetes-associated pattern detected (95% confidence)."
+  },
+  "summary": "## Clinical Summary\n\n**Predicted Classification:** NONDM (No Diabetes-Associated Pattern)  \n**Confidence Level:** High (95.2%)\n\n### What This Means for the Patient\n\nThis genetic analysis indicates that the DNA sequence does not contain genomic patterns associated with either Type 1 or Type 2 diabetes. The very high confidence level (95.2%) suggests this is a reliable assessment.\n\n**Risk Interpretation:**\n- **Type 1 Diabetes Risk:** Very low genetic predisposition (0.6% probability)\n- **Type 2 Diabetes Risk:** Low genetic predisposition (4.2% probability) \n- **No Diabetes Pattern:** Strong likelihood (95.2% probability)\n\n### Clinical Significance\n\nThis result suggests the patient does not carry genetic variants in this genomic region that are commonly associated with diabetes development. However, it's important to note that:\n\n- This analysis covers only a specific genomic region\n- Diabetes risk involves multiple genetic and environmental factors\n- A \"NONDM\" classification does not guarantee immunity from diabetes\n- Lifestyle factors, family history, and other genetic regions also contribute to overall diabetes risk\n\nThe patient should continue with standard diabetes prevention measures and regular health monitoring as recommended by their healthcare provider.",
+  "error": null
+}

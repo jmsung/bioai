@@ -1,0 +1,20 @@
+{
+  "agent": "pharmacology",
+  "status": "success",
+  "findings": {
+    "diabetes_subtype": "Type 2 — early stage, subclinical insulin resistance",
+    "primary_medications": [
+      {
+        "name": "Metformin",
+        "class": "Biguanide",
+        "dose": "500mg daily, titrate to 1000mg/day",
+        "rationale": "First-line preventive therapy — early intervention while clinical markers are still normal"
+      }
+    ],
+    "supportive_medications": [],
+    "monitoring_plan": "HbA1c every 6 months, fasting glucose quarterly, repeat transcriptomics at 6 months to track pathway progression",
+    "medication_summary": "Metformin monotherapy (conservative). Early intervention approach given subclinical molecular findings with normal clinical presentation."
+  },
+  "summary": "Recommended conservative monotherapy: Metformin 500-1000mg/day for early T2D intervention. Molecular evidence supports treatment despite normal clinical labs. Monitor pathway progression at 6 months.",
+  "error": null
+}

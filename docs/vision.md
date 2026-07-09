@@ -12,43 +12,69 @@ Standard diabetes diagnosis relies entirely on clinical measurements — blood g
 
 Both failures are costly. One wastes money. The other costs health.
 
-## The Solution: DNA-Level Precision Medicine
+## The Solution: Multi-Omics Precision Validation
 
-BioAI adds a genomic layer on top of clinical assessment. By classifying a patient's DNA alongside their clinical measurements, the system can:
+Precision Health Agents uses **multiple independent evidence sources across the biological spectrum** to confirm or reject a diabetes diagnosis, catching false positives before unnecessary medication:
 
-1. **Confirm or override clinical predictions** with genetic evidence
-2. **Differentiate treatment** based on whether the patient is DMT1 or DMT2
-3. **Flag asymptomatic high-risk patients** before disease onset
-4. **Prevent unnecessary treatment** for patients with no genetic predisposition
+1. **Genomics** — Inherited risk, long-term predisposition (most stable layer)
+2. **Clinical (Doctor)** — Conversational intake → diabetes probability from clinical features
+3. **Transcriptomics** — Current pathway activity: inflammation, beta cell stress, insulin resistance
+4. **Proteomics** — Functional biomarkers: inflammatory/signaling proteins, kidney/CV injury markers (closer to function than RNA)
+5. **Metabolomics** — Current metabolic state: insulin resistance signals, lipid dysregulation, BCAA/acylcarnitine patterns (most clinically promising — directly reflects altered metabolism)
+
+```
+Stable <-----------------------------------------------------> Dynamic
+
+Genomics       Transcriptomics       Proteomics       Metabolomics
+(inherited)     (pathway activity)    (functional)     (metabolic state)
+```
+
+Each layer independently evaluates the patient. The omics layers progressively refine the diagnosis — from inherited predisposition to current molecular state. If molecular evidence doesn't support the initial diagnosis, the patient is rerouted to lifestyle intervention instead of unnecessary drugs.
 
 This is the core value of precision medicine: the right decision, for the right patient, based on who they actually are at the molecular level.
 
-## The Two-Agent Flow
+## The Multi-Omics Validation Flow
 
 ```
-[Genomics Agent]                    [Doctor Agent]
-  DNA sequence                        Clinical conversation
-       │                                     │
-  classify_dna                     classify_diabetes (MLP)
-       │                                     │
-  DMT1 / DMT2 / NONDM              Diabetic / Non-Diabetic
-       │                                     │
-       └──────────────┬──────────────────────┘
-                      │
-              [Unified Decision]
-                      │
-          ┌───────────┴───────────┐
-     High genetic risk        No genetic risk
-     + clinical positive      + clinical positive
-          │                        │
-     Go to hospital           Reconsider diagnosis
-     (confirmed diabetes)     (may not need drugs)
-          │
-     ┌────┴────┐
-   DMT1       DMT2
-     │           │
-  Insulin     Metformin /
-  therapy     GLP-1 agonists
+[Genomics]              [Doctor]
+  DNA sequence            Clinical conversation
+       |                       |
+  DMT1 / DMT2 / NONDM    Diabetic / Non-Diabetic
+       |                       |
+       +-----------+-----------+
+                   |
+           [Initial Decision]
+                   |
+       +----------+----------+
+  High genetic risk      No genetic risk
+  + clinical positive     → Health Trainer
+       |
+  Go to hospital
+       |
+  [Hospital Agent]
+  "We need blood tests to confirm. Are you willing?"
+       |
+  Patient consents
+       |
+  +----+----+  (runs both in parallel)
+  |         |
+[Transcriptomics]    [Metabolomics]
+  110-gene panel       78 metabolites
+  5 pathway scores     5 pathway scores
+  subtype + risks      IR score + pattern
+  |         |
+  +----+----+
+       |
+  [Combined Molecular Confirmation]
+  Both confirm → high confidence
+  One confirms → moderate confidence
+  Neither → false positive
+       |
+  +----+----+
+Confirmed    NOT confirmed ──→ Health Trainer
+       |                       (no drugs needed)
+       |
+  [Pharmacology] ──→ subtype-informed drug plan
 ```
 
 ## Drug Differentiation by DNA
@@ -64,24 +90,27 @@ Giving a Type 2 drug to a Type 1 patient, or vice versa, is at best ineffective 
 
 ## Why This Matters
 
-- **Patients save money** — no unnecessary drugs for the genetically non-predisposed
+- **Patients save money** — no unnecessary drugs for the genetically non-predisposed or molecularly unconfirmed
+- **False positives caught** — multi-omics validation prevents premature medication when molecular evidence doesn't support the diagnosis
 - **Early intervention works** — catch DMT2 patients before clinical symptoms appear
-- **Treatment is precise** — DNA-matched drugs are more effective and safer
-- **Doctors get a second opinion** — AI-backed genomic evidence, not just clinical intuition
+- **Treatment is precise** — DNA-matched + subtype-informed + metabolically-guided drugs are more effective and safer
+- **Doctors get a multi-omics check** — genomic, transcriptomic, proteomic, and metabolomic evidence, not just clinical intuition
 
 ## Specialized Agents
 
 | Agent | Role |
 |---|---|
-| **Genomics** | DNA classification (DMT1/DMT2/NONDM) — genetic predisposition layer |
+| **Genomics** | DNA classification (DMT1/DMT2/NONDM) — inherited risk, most stable layer |
 | **Doctor** | Conversational clinical intake → diabetes probability → hospital/health trainer routing |
-| **Transcriptomics** | Gene expression signals for disease progression |
-| **Proteomics** | Biomarker inference |
-| **Pharmacology** | Drug-gene interaction reasoning — DNA-matched drug recommendations |
+| **Transcriptomics** | Pathway activity — confirms/rejects diabetes, subtype, complication risks |
+| **Proteomics** | Functional biomarkers — inflammatory/signaling proteins, kidney/CV injury markers |
+| **Metabolomics** | Current metabolic state — insulin resistance, lipid dysregulation, BCAA patterns |
+| **Hospital** | Coordinates molecular tests — patient consent, runs transcriptomics + metabolomics, combined decision |
+| **Pharmacology** | Drug-gene interaction reasoning — subtype-informed drug recommendations |
 | **Clinical Guidelines** | Evidence-based guideline interpretation |
 | **Literature Review** | Latest research on DNA-matched diabetes treatment |
 
-## What BioAI Is Not
+## What Precision Health Agents Is Not
 
 - Not a replacement for physicians — it is decision support
 - Not a general-purpose health chatbot — it is focused on DNA-precision diabetes care

@@ -1,0 +1,33 @@
+{
+  "agent": "pharmacology",
+  "status": "success",
+  "findings": {
+    "diabetes_subtype": "Type 2 — insulin resistance dominant with inflammatory amplification",
+    "primary_medications": [
+      {
+        "name": "Metformin",
+        "class": "Biguanide",
+        "dose": "500mg twice daily, titrate to 2000mg/day",
+        "rationale": "First-line for T2D — reduces hepatic glucose output, improves insulin sensitivity"
+      },
+      {
+        "name": "Semaglutide",
+        "class": "GLP-1 receptor agonist",
+        "dose": "0.25mg weekly, titrate to 1mg weekly",
+        "rationale": "Addresses insulin resistance pathway, cardiovascular benefit, weight reduction"
+      }
+    ],
+    "supportive_medications": [
+      {
+        "name": "Empagliflozin",
+        "class": "SGLT2 inhibitor",
+        "dose": "10mg daily",
+        "rationale": "Nephroprotective given elevated fibrosis markers (COL1A1/FN1)"
+      }
+    ],
+    "monitoring_plan": "HbA1c every 3 months, renal function quarterly, liver enzymes at baseline and 3 months",
+    "medication_summary": "Metformin + Semaglutide (primary) + Empagliflozin (renal protection). Triple therapy targeting insulin resistance, inflammatory pathways, and nephropathy risk."
+  },
+  "summary": "Recommended triple therapy: Metformin (first-line), Semaglutide (GLP-1 RA for insulin resistance + CV benefit), Empagliflozin (SGLT2i for nephroprotection). Based on T2D with dominant inflammation and fibrosis markers.",
+  "error": null
+}
