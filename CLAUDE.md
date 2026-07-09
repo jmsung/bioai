@@ -12,14 +12,13 @@ precision-health-agents/
 ├── tests/               # Tests (mirror src/ structure, 200 tests)
 ├── docs/                # Knowledge DB (architecture, vision, data, demo)
 ├── data/                # Datasets (gitignored)
-├── mb_<dev>/            # Per-developer memory banks (gitignored)
 ```
 
 ## Development Model
 
 - **Team**: JS (top-down: infra, orchestration, architecture), YH (bottom-up: data pipeline, tools, agents, testing)
 - **Workflow**: Parallel worktrees per task, rebase-and-merge to main
-- **Memory banks**: Each developer has `mb_js/` or `mb_yh/` (gitignored) for local task tracking
+- **Memory banks**: per-dev tracking was consolidated into the private umbrella `mb/` on project completion (2026-07); historical `mb_js`/`mb_yh` progress kept in `mb/notes/`
 - **Merge protocol**: rebase → `git push origin <branch>:main` → tell teammate → they rebase
 
 ## Key References
@@ -61,11 +60,6 @@ uv run python scripts/evaluate.py --ralph --iter 3  # Ralph Loop
 uv run streamlit run app/dashboard.py        # Eval dashboard
 ```
 
-## Memory Bank Setup
+## Memory Bank
 
-Memory banks are gitignored. After cloning, create yours:
-
-```bash
-mkdir -p mb_<you>/{active,hold,todo,completed}
-# Seed progress.md from your task list
-```
+Per-dev memory banks (`mb_js/`, `mb_yh/`) were retired on project completion — their progress records live in the private umbrella `mb/notes/`. Project tracking is now the single umbrella `mb/progress.md`.
