@@ -38,3 +38,4 @@ build/
 
 # Local Claude Code settings (per-user)
 .claude/
+.DS_Store
